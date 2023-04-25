@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="fuRpVi" name="Fader_Rider" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              cppLanguageStandard="20">
   <MAINGROUP id="DtYvQU" name="Fader_Rider">
     <GROUP id="{EC529A27-8A67-85CA-21F4-9D85F035CAD4}" name="Source">
       <FILE id="mqNJDg" name="PluginProcessor.cpp" compile="1" resource="0"
