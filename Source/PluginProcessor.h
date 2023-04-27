@@ -10,6 +10,21 @@
 
 #include <JuceHeader.h>
 
+struct ParameterSettings
+{
+	float TargetLevel{1.f};
+    float FaderLevel{1.f};
+    float RangeMax{1.f};
+    float RangeMin{0.f};
+    float VocalSensitivity{0.5f};
+    float MusicSensitivity{0.2f};
+    float Output{1.f};
+    float Attack{0.f};
+
+    void DbToGain();
+
+};
+
 //==============================================================================
 /**
 */
@@ -59,7 +74,11 @@ public:
     juce::AudioProcessorValueTreeState::ParameterLayout CreateParameterLayout();
     juce::AudioProcessorValueTreeState valueTreeState;
 
+    ParameterSettings CreateParameterSettings();
+
 private:
+    ParameterSettings m_Parameters{};
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Fader_RiderAudioProcessor)
 };
