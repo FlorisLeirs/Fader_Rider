@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin processor.
+	This file contains the basic framework code for a JUCE plugin processor.
 
   ==============================================================================
 */
@@ -10,75 +10,73 @@
 
 #include <JuceHeader.h>
 
-struct ParameterSettings
-{
-	float TargetLevel{1.f};
-    float FaderLevel{1.f};
-    float RangeMax{1.f};
-    float RangeMin{0.f};
-    float VocalSensitivity{0.5f};
-    float MusicSensitivity{0.2f};
-    float Output{1.f};
-    float Attack{0.f};
+//struct ParameterSettings
+//{
+//	float TargetLevel{1.f};
+//    float FaderLevel{1.f};
+//    float RangeMax{1.f};
+//    float RangeMin{0.f};
+//    float VocalSensitivity{0.5f};
+//    float MusicSensitivity{0.2f};
+//    float Output{1.f};
+//    float Attack{0.f};
+//
+//    void DbToGain();
+//
+//};
 
-    void DbToGain();
-
-};
-
+class FaderValueTree;
 //==============================================================================
 /**
 */
-class Fader_RiderAudioProcessor  : public juce::AudioProcessor
-                            #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
-                            #endif
+class Fader_RiderAudioProcessor : public juce::AudioProcessor
+#if JucePlugin_Enable_ARA
+	, public juce::AudioProcessorARAExtension
+#endif
 {
 public:
-    //==============================================================================
-    Fader_RiderAudioProcessor();
-    ~Fader_RiderAudioProcessor() override;
+	//==============================================================================
+	Fader_RiderAudioProcessor();
+	~Fader_RiderAudioProcessor() override;
 
-    //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+	//==============================================================================
+	void prepareToPlay(double sampleRate, int samplesPerBlock) override;
+	void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#ifndef JucePlugin_PreferredChannelConfigurations
+	bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
+#endif
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    //==============================================================================
-    juce::AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+	//==============================================================================
+	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override;
 
-    //==============================================================================
-    const juce::String getName() const override;
+	//==============================================================================
+	const juce::String getName() const override;
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool isMidiEffect() const override;
-    double getTailLengthSeconds() const override;
+	bool acceptsMidi() const override;
+	bool producesMidi() const override;
+	bool isMidiEffect() const override;
+	double getTailLengthSeconds() const override;
 
-    //==============================================================================
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+	//==============================================================================
+	int getNumPrograms() override;
+	int getCurrentProgram() override;
+	void setCurrentProgram(int index) override;
+	const juce::String getProgramName(int index) override;
+	void changeProgramName(int index, const juce::String& newName) override;
 
-    //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+	//==============================================================================
+	void getStateInformation(juce::MemoryBlock& destData) override;
+	void setStateInformation(const void* data, int sizeInBytes) override;
 
-    juce::AudioProcessorValueTreeState::ParameterLayout CreateParameterLayout();
-    juce::AudioProcessorValueTreeState valueTreeState;
-
-    ParameterSettings CreateParameterSettings();
 
 private:
-    ParameterSettings m_Parameters{};
+	std::unique_ptr<FaderValueTree> m_pValueTreeState;
 
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Fader_RiderAudioProcessor)
+
+	//==============================================================================
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fader_RiderAudioProcessor)
 };

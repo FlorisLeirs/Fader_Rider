@@ -7,30 +7,9 @@
 */
 
 #include "PluginProcessor.h"
+
+#include "FaderValueTree.h"
 #include "PluginEditor.h"
-
-void ParameterSettings::DbToGain()
-{
-	TargetLevel = juce::Decibels::decibelsToGain(TargetLevel);
-
-	// Make sure values are between -INF and 0 for conversion then add sign
-	FaderLevel = FaderLevel < 0.f
-		             ? juce::Decibels::decibelsToGain(fabs(FaderLevel)) * -1.f
-		             : juce::Decibels::decibelsToGain(fabs(FaderLevel));
-
-	RangeMax = RangeMax < 0.f
-		           ? juce::Decibels::decibelsToGain(fabs(RangeMax)) * -1.f
-		           : juce::Decibels::decibelsToGain(fabs(RangeMax));
-
-	RangeMin = RangeMin < 0.f
-		           ? juce::Decibels::decibelsToGain(fabs(RangeMin)) * -1.f
-		           : juce::Decibels::decibelsToGain(fabs(RangeMin));
-
-	VocalSensitivity = juce::Decibels::decibelsToGain(VocalSensitivity);
-	MusicSensitivity = juce::Decibels::decibelsToGain(MusicSensitivity);
-	Output = juce::Decibels::decibelsToGain(Output);
-
-}
 
 //==============================================================================
 Fader_RiderAudioProcessor::Fader_RiderAudioProcessor()
@@ -44,10 +23,9 @@ Fader_RiderAudioProcessor::Fader_RiderAudioProcessor()
 #endif
 	)
 #endif
-	, valueTreeState(*this, nullptr, "Parameters", CreateParameterLayout())
 {
-	m_Parameters = CreateParameterSettings();
-	m_Parameters.DbToGain();
+	m_pValueTreeState = std::make_unique<FaderValueTree>(*this);
+
 }
 
 Fader_RiderAudioProcessor::~Fader_RiderAudioProcessor()
@@ -192,7 +170,8 @@ bool Fader_RiderAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* Fader_RiderAudioProcessor::createEditor()
 {
-	return new Fader_RiderAudioProcessorEditor(*this);
+	//return new Fader_RiderAudioProcessorEditor(*this);
+	return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -207,62 +186,6 @@ void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeIn
 {
 	// You should use this method to restore your parameters from this memory block,
 	// whose contents will have been created by the getStateInformation() call.
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout Fader_RiderAudioProcessor::CreateParameterLayout()
-{
-	juce::AudioProcessorValueTreeState::ParameterLayout layout{};
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("TargetLevel", "TargetLevel",
-		juce::NormalisableRange<float>(-30.f, 0.f, 0.2f, 1.f),
-		0.f));
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("FaderLevel", "FaderLevel",
-		juce::NormalisableRange<float>(-12.f, 12.f, 0.2f, 1.f),
-		0.f));
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("RangeMax", "RangeMax",
-		juce::NormalisableRange<float>(-12.f, 12.f, 0.2f, 1.f),
-		12.f));
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("RangeMin", "RangeMin",
-		juce::NormalisableRange<float>(-12.f, 12.f, 0.2f, 1.f),
-		-12.f));
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("VocalSensitivity", "VocalSensitivity",
-		juce::NormalisableRange<float>(-10.f, -30.f, 0.2f, 1.f),
-		-20.f));
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("MusicSensitivity", "MusicSensitivity",
-		juce::NormalisableRange<float>(-10.f, -30.f, 0.2f, 1.f),
-		-20.f));
-
-	layout.add(std::make_unique<juce::AudioParameterFloat>("Output", "Output",
-		juce::NormalisableRange<float>(100.f, -100.f, 0.2f, 1.f),
-		0.f));
-	
-	layout.add(std::make_unique<juce::AudioParameterFloat>("Attack", "Attack",
-		juce::NormalisableRange<float>(0.f, 500.f, 1.f, 1.f),
-		0.f));
-
-
-	return layout;
-}
-
-ParameterSettings Fader_RiderAudioProcessor::CreateParameterSettings()
-{
-	ParameterSettings params{};
-
-	params.RangeMin = valueTreeState.getRawParameterValue("RangeMin")->load();
-	params.RangeMax = valueTreeState.getRawParameterValue("RangeMax")->load();
-	params.TargetLevel = valueTreeState.getRawParameterValue("TargetLevel")->load();
-	params.FaderLevel = valueTreeState.getRawParameterValue("FaderLevel")->load();
-	params.VocalSensitivity = valueTreeState.getRawParameterValue("VocalSensitivity")->load();
-	params.MusicSensitivity = valueTreeState.getRawParameterValue("MusicSensitivity")->load();
-	params.Output = valueTreeState.getRawParameterValue("Output")->load();
-	params.Attack = valueTreeState.getRawParameterValue("Attack")->load();
-
-	return params;
 }
 
 //==============================================================================
