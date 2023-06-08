@@ -81,16 +81,16 @@ int Fader_RiderAudioProcessor::getCurrentProgram()
 	return 0;
 }
 
-void Fader_RiderAudioProcessor::setCurrentProgram(int index)
+void Fader_RiderAudioProcessor::setCurrentProgram(int /*index*/)
 {
 }
 
-const juce::String Fader_RiderAudioProcessor::getProgramName(int index)
+const juce::String Fader_RiderAudioProcessor::getProgramName(int /*index*/)
 {
 	return {};
 }
 
-void Fader_RiderAudioProcessor::changeProgramName(int index, const juce::String& newName)
+void Fader_RiderAudioProcessor::changeProgramName(int /*index*/, const juce::String& /*newName*/)
 {
 }
 
@@ -99,6 +99,14 @@ void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 {
 	// Use this method as the place to do any pre-playback
 	// initialisation that you need..
+	juce::dsp::ProcessSpec spec;
+
+	spec.maximumBlockSize = samplesPerBlock;
+	spec.sampleRate = sampleRate;
+	spec.numChannels = 1;
+
+	leftChannel.prepare(spec);
+	rightChannel.prepare(spec);
 }
 
 void Fader_RiderAudioProcessor::releaseResources()
@@ -133,11 +141,11 @@ bool Fader_RiderAudioProcessor::isBusesLayoutSupported(const BusesLayout& layout
 }
 #endif
 
-void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& /*midiMessages*/)
 {
 	juce::ScopedNoDenormals noDenormals;
-	auto totalNumInputChannels = getTotalNumInputChannels();
-	auto totalNumOutputChannels = getTotalNumOutputChannels();
+	const auto totalNumInputChannels = getTotalNumInputChannels();
+	const auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 	// In case we have more outputs than inputs, this code clears any output
 	// channels that didn't contain input data, (because these aren't
@@ -154,12 +162,31 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 	// the samples and the outer loop is handling the channels.
 	// Alternatively, you can process the samples with the channels
 	// interleaved by keeping the same state.
+	float averageGain{ 0.f };
 	for (int channel = 0; channel < totalNumInputChannels; ++channel)
 	{
-		auto* channelData = buffer.getWritePointer(channel);
-
-		// ..do something to the data...
+		const float level = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+		averageGain += juce::Decibels::gainToDecibels(level);
 	}
+	averageGain /= totalNumInputChannels;
+	m_pValueTreeState->SetGainLevel(averageGain);
+
+	juce::dsp::AudioBlock<float> block(buffer);
+	auto leftBlock = block.getSingleChannelBlock(0);
+	auto rightBlock = block.getSingleChannelBlock(1);
+
+	const juce::dsp::ProcessContextReplacing leftContext(leftBlock);
+	const juce::dsp::ProcessContextReplacing rightContext(rightBlock);
+
+	leftChannel.process(leftContext);
+	rightChannel.process(rightContext);
+
+	const float faderLevel = m_pValueTreeState->getRawParameterValue("FaderLevel")->load();
+	const auto leftGain = faderLevel + leftChannel.get<1>().getGainDecibels();
+	const auto rightGain = faderLevel + rightChannel.get<1>().getGainDecibels();
+
+	leftChannel.get<1>().setGainDecibels(leftGain);
+	rightChannel.get<1>().setGainDecibels(rightGain);
 }
 
 //==============================================================================
@@ -175,14 +202,14 @@ juce::AudioProcessorEditor* Fader_RiderAudioProcessor::createEditor()
 }
 
 //==============================================================================
-void Fader_RiderAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+void Fader_RiderAudioProcessor::getStateInformation(juce::MemoryBlock& /*destData*/)
 {
 	// You should use this method to store your parameters in the memory block.
 	// You could do that either as raw data, or use the XML or ValueTree classes
 	// as intermediaries to make it easy to save and load complex data.
 }
 
-void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+void Fader_RiderAudioProcessor::setStateInformation(const void* /*data*/, int /*sizeInBytes*/)
 {
 	// You should use this method to restore your parameters from this memory block,
 	// whose contents will have been created by the getStateInformation() call.

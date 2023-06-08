@@ -2,20 +2,21 @@
 
 void ParameterSettings::DbToGain()
 {
-	TargetLevel = juce::Decibels::decibelsToGain(TargetLevel);
-
+	//TargetLevel = TargetLevel < 0.f
+	//	             ? juce::Decibels::decibelsToGain(fabs(TargetLevel)) * -1.f
+	//	             : juce::Decibels::decibelsToGain(fabs(TargetLevel));
 	// Make sure values are between -INF and 0 for conversion then add sign
-	FaderLevel = FaderLevel < 0.f
-		             ? juce::Decibels::decibelsToGain(fabs(FaderLevel)) * -1.f
-		             : juce::Decibels::decibelsToGain(fabs(FaderLevel));
+	//FaderLevel = FaderLevel < 0.f
+	//	             ? juce::Decibels::decibelsToGain(fabs(FaderLevel)) * -1.f
+	//	             : juce::Decibels::decibelsToGain(fabs(FaderLevel));
 
-	RangeMax = RangeMax < 0.f
-		           ? juce::Decibels::decibelsToGain(fabs(RangeMax)) * -1.f
-		           : juce::Decibels::decibelsToGain(fabs(RangeMax));
+	//RangeMax = RangeMax < 0.f
+	//	           ? juce::Decibels::decibelsToGain(fabs(RangeMax)) * -1.f
+	//	           : juce::Decibels::decibelsToGain(fabs(RangeMax));
 
-	RangeMin = RangeMin < 0.f
-		           ? juce::Decibels::decibelsToGain(fabs(RangeMin)) * -1.f
-		           : juce::Decibels::decibelsToGain(fabs(RangeMin));
+	//RangeMin = RangeMin < 0.f
+	//	           ? juce::Decibels::decibelsToGain(fabs(RangeMin)) * -1.f
+	//	           : juce::Decibels::decibelsToGain(fabs(RangeMin));
 
 	VocalSensitivity = juce::Decibels::decibelsToGain(VocalSensitivity);
 	MusicSensitivity = juce::Decibels::decibelsToGain(MusicSensitivity);
@@ -40,7 +41,14 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.Output = getRawParameterValue("Output")->load();
 	m_Parameters.Attack = getRawParameterValue("Attack")->load();
 
-	m_Parameters.DbToGain();
+	//m_Parameters.DbToGain();
+}
+
+void FaderValueTree::SetGainLevel(float currentGain)
+{
+	float gainOffset = m_Parameters.TargetLevel - currentGain;
+	gainOffset = std::clamp(gainOffset, m_Parameters.RangeMin, m_Parameters.RangeMax);
+	m_Parameters.FaderLevel = gainOffset;
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParameterLayout()
@@ -48,35 +56,35 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 	ParameterLayout layout{};
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("TargetLevel", "TargetLevel",
-		juce::NormalisableRange<float>(-30.f, 0.f, 0.2f, 1.f),
+		juce::NormalisableRange(-30.f, 12.f, 0.2f, 1.f),
 		0.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("FaderLevel", "FaderLevel",
-		juce::NormalisableRange<float>(-12.f, 12.f, 0.2f, 1.f),
+		juce::NormalisableRange(-12.f, 12.f, 0.2f, 1.f),
 		0.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("RangeMax", "RangeMax",
-		juce::NormalisableRange<float>(-12.f, 12.f, 0.2f, 1.f),
+		juce::NormalisableRange(-12.f, 12.f, 0.2f, 1.f),
 		12.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("RangeMin", "RangeMin",
-		juce::NormalisableRange<float>(-12.f, 12.f, 0.2f, 1.f),
+		juce::NormalisableRange(-12.f, 12.f, 0.2f, 1.f),
 		-12.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("VocalSensitivity", "VocalSensitivity",
-		juce::NormalisableRange<float>(-310.f, -10.f, 0.2f, 1.f),
+		juce::NormalisableRange(-310.f, -10.f, 0.2f, 1.f),
 		-20.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("MusicSensitivity", "MusicSensitivity",
-		juce::NormalisableRange<float>(-30.f, -10.f, 0.2f, 1.f),
+		juce::NormalisableRange(-30.f, -10.f, 0.2f, 1.f),
 		-20.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("Output", "Output",
-		juce::NormalisableRange<float>(-100.f, 100.f, 0.2f, 1.f),
+		juce::NormalisableRange(-100.f, 100.f, 0.2f, 1.f),
 		0.f));
 	
 	layout.add(std::make_unique<juce::AudioParameterFloat>("Attack", "Attack",
-		juce::NormalisableRange<float>(0.f, 500.f, 1.f, 1.f),
+		juce::NormalisableRange(0.f, 500.f, 1.f, 1.f),
 		0.f));
 
 

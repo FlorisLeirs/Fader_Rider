@@ -74,6 +74,12 @@ public:
 
 
 private:
+	using Gain = juce::dsp::Gain<float>;
+	using NoiseGate = juce::dsp::NoiseGate<float>;
+	using LevelAdjuster = juce::dsp::ProcessorChain<NoiseGate, Gain>;
+
+	LevelAdjuster leftChannel, rightChannel;
+
 	std::unique_ptr<FaderValueTree> m_pValueTreeState;
 
 

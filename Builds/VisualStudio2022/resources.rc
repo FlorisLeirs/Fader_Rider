@@ -15,9 +15,10 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileDescription",  "Fader_Rider\0"
+      VALUE "CompanyName",  "FlorisL\0"
+      VALUE "FileDescription",  "FaderRider\0"
       VALUE "FileVersion",  "1.0.0\0"
-      VALUE "ProductName",  "Fader_Rider\0"
+      VALUE "ProductName",  "FaderRider\0"
       VALUE "ProductVersion",  "1.0.0\0"
     END
   END

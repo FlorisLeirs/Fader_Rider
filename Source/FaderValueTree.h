@@ -22,7 +22,7 @@ public:
 	FaderValueTree(juce::AudioProcessor& audioProcessor);
 
 	void UpdateParameterSettings();
-
+	void SetGainLevel(float currentGain);
 private:
 	ParameterSettings m_Parameters{};
 
