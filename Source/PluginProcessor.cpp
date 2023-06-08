@@ -107,6 +107,12 @@ void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 
 	m_LeftChannel.prepare(spec);
 	m_RightChannel.prepare(spec);
+
+	m_RightChannel.get<0>().setRatio(10.f);
+	m_LeftChannel.get<0>().setRatio(10.f);
+
+	m_RightChannel.get<0>().setAttack(0.f);
+	m_LeftChannel.get<0>().setAttack(0.f);
 }
 
 void Fader_RiderAudioProcessor::releaseResources()
@@ -167,12 +173,19 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 	averageGain /= totalNumInputChannels;
 	m_pValueTreeState.SetGainLevel(averageGain);
 
-	const float faderLevel = m_pValueTreeState.GetParameterSettings().FaderLevel;
-	const auto leftGain = faderLevel + buffer.getRMSLevel(0, 0, buffer.getNumSamples());
-	const auto rightGain = faderLevel + buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+	const ParameterSettings params = m_pValueTreeState.GetParameterSettings();
 
-	m_LeftChannel.get<0>().setGainDecibels(leftGain);
-	m_RightChannel.get<0>().setGainDecibels(rightGain);
+	auto leftGain = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+	auto rightGain = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+
+	m_RightChannel.get<0>().setThreshold(params.VocalSensitivity);
+	m_LeftChannel.get<0>().setThreshold(params.VocalSensitivity);
+
+	leftGain += params.FaderLevel;
+	rightGain += params.FaderLevel;
+
+	m_LeftChannel.get<1>().setGainDecibels(leftGain);
+	m_RightChannel.get<1>().setGainDecibels(rightGain);
 
 	const juce::dsp::AudioBlock<float> block(buffer);
 	auto leftBlock = block.getSingleChannelBlock(0);

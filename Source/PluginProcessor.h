@@ -79,12 +79,9 @@ public:
 private:
 	using Gain = juce::dsp::Gain<float>;
 	using NoiseGate = juce::dsp::NoiseGate<float>;
-	using LevelAdjuster = juce::dsp::ProcessorChain</*NoiseGate*/ Gain>;
+	using LevelAdjuster = juce::dsp::ProcessorChain<NoiseGate, Gain>;
 
 	LevelAdjuster m_LeftChannel, m_RightChannel;
-
-
-
 
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fader_RiderAudioProcessor)

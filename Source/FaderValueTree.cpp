@@ -77,12 +77,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 		-12.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("VocalSensitivity", "VocalSensitivity",
-		juce::NormalisableRange(-310.f, -10.f, 0.2f, 1.f),
-		-20.f));
+		juce::NormalisableRange(-50.f, 0.f, 0.05f, 1.f),
+		-25.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("MusicSensitivity", "MusicSensitivity",
-		juce::NormalisableRange(-30.f, -10.f, 0.2f, 1.f),
-		-20.f));
+		juce::NormalisableRange(-50.f, -10.f, 0.5f, 1.f),
+		-25.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("Output", "Output",
 		juce::NormalisableRange(-100.f, 100.f, 0.2f, 1.f),
