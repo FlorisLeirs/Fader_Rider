@@ -23,6 +23,8 @@ public:
 
 	void UpdateParameterSettings();
 	void SetGainLevel(float currentGain);
+
+	ParameterSettings GetParameterSettings() const { return m_Parameters; };
 private:
 	ParameterSettings m_Parameters{};
 

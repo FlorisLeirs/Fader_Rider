@@ -46,6 +46,11 @@ void FaderValueTree::UpdateParameterSettings()
 
 void FaderValueTree::SetGainLevel(float currentGain)
 {
+	if(currentGain <= -100.f)
+	{
+		m_Parameters.FaderLevel = 0.f;
+		return;
+	}
 	float gainOffset = m_Parameters.TargetLevel - currentGain;
 	gainOffset = std::clamp(gainOffset, m_Parameters.RangeMin, m_Parameters.RangeMax);
 	m_Parameters.FaderLevel = gainOffset;
@@ -56,7 +61,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 	ParameterLayout layout{};
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("TargetLevel", "TargetLevel",
-		juce::NormalisableRange(-30.f, 12.f, 0.2f, 1.f),
+		juce::NormalisableRange(-30.f, 0.f, 0.2f, 1.f),
 		0.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("FaderLevel", "FaderLevel",

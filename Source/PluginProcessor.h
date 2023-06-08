@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 
+#include "FaderValueTree.h"
+
 //struct ParameterSettings
 //{
 //	float TargetLevel{1.f};
@@ -72,15 +74,16 @@ public:
 	void getStateInformation(juce::MemoryBlock& destData) override;
 	void setStateInformation(const void* data, int sizeInBytes) override;
 
+	FaderValueTree m_pValueTreeState{*this};
 
 private:
 	using Gain = juce::dsp::Gain<float>;
 	using NoiseGate = juce::dsp::NoiseGate<float>;
-	using LevelAdjuster = juce::dsp::ProcessorChain<NoiseGate, Gain>;
+	using LevelAdjuster = juce::dsp::ProcessorChain</*NoiseGate*/ Gain>;
 
-	LevelAdjuster leftChannel, rightChannel;
+	LevelAdjuster m_LeftChannel, m_RightChannel;
 
-	std::unique_ptr<FaderValueTree> m_pValueTreeState;
+
 
 
 	//==============================================================================

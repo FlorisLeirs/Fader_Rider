@@ -8,7 +8,6 @@
 
 #include "PluginProcessor.h"
 
-#include "FaderValueTree.h"
 #include "PluginEditor.h"
 
 //==============================================================================
@@ -24,7 +23,6 @@ Fader_RiderAudioProcessor::Fader_RiderAudioProcessor()
 	)
 #endif
 {
-	m_pValueTreeState = std::make_unique<FaderValueTree>(*this);
 
 }
 
@@ -99,14 +97,16 @@ void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 {
 	// Use this method as the place to do any pre-playback
 	// initialisation that you need..
-	juce::dsp::ProcessSpec spec;
+	m_pValueTreeState.UpdateParameterSettings();
+
+	juce::dsp::ProcessSpec spec{};
 
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.sampleRate = sampleRate;
 	spec.numChannels = 1;
 
-	leftChannel.prepare(spec);
-	rightChannel.prepare(spec);
+	m_LeftChannel.prepare(spec);
+	m_RightChannel.prepare(spec);
 }
 
 void Fader_RiderAudioProcessor::releaseResources()
@@ -156,12 +156,8 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
-	// This is the place where you'd normally do the guts of your plugin's
-	// audio processing...
-	// Make sure to reset the state if your inner loop is processing
-	// the samples and the outer loop is handling the channels.
-	// Alternatively, you can process the samples with the channels
-	// interleaved by keeping the same state.
+	m_pValueTreeState.UpdateParameterSettings();
+
 	float averageGain{ 0.f };
 	for (int channel = 0; channel < totalNumInputChannels; ++channel)
 	{
@@ -169,24 +165,24 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 		averageGain += juce::Decibels::gainToDecibels(level);
 	}
 	averageGain /= totalNumInputChannels;
-	m_pValueTreeState->SetGainLevel(averageGain);
+	m_pValueTreeState.SetGainLevel(averageGain);
 
-	juce::dsp::AudioBlock<float> block(buffer);
+	const float faderLevel = m_pValueTreeState.GetParameterSettings().FaderLevel;
+	const auto leftGain = faderLevel + buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+	const auto rightGain = faderLevel + buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+
+	m_LeftChannel.get<0>().setGainDecibels(leftGain);
+	m_RightChannel.get<0>().setGainDecibels(rightGain);
+
+	const juce::dsp::AudioBlock<float> block(buffer);
 	auto leftBlock = block.getSingleChannelBlock(0);
 	auto rightBlock = block.getSingleChannelBlock(1);
 
 	const juce::dsp::ProcessContextReplacing leftContext(leftBlock);
 	const juce::dsp::ProcessContextReplacing rightContext(rightBlock);
 
-	leftChannel.process(leftContext);
-	rightChannel.process(rightContext);
-
-	const float faderLevel = m_pValueTreeState->getRawParameterValue("FaderLevel")->load();
-	const auto leftGain = faderLevel + leftChannel.get<1>().getGainDecibels();
-	const auto rightGain = faderLevel + rightChannel.get<1>().getGainDecibels();
-
-	leftChannel.get<1>().setGainDecibels(leftGain);
-	rightChannel.get<1>().setGainDecibels(rightGain);
+	m_LeftChannel.process(leftContext);
+	m_RightChannel.process(rightContext);
 }
 
 //==============================================================================
