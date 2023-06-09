@@ -41,6 +41,26 @@
         <MODULEPATH id="juce_dsp" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_dsp" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="D:\22-23\Sem2\AudioProg\JUCE\modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

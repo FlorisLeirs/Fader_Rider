@@ -29,5 +29,12 @@ private:
     // access the processor object that created it.
     Fader_RiderAudioProcessor& audioProcessor;
 
+    juce::Slider m_MinMaxSlider{};
+    juce::Slider m_OutputSlider{};
+    juce::Slider m_FaderLevel{};
+    juce::Slider m_TargetLevel{};
+    juce::Slider m_VocalSensitivity{};
+    juce::Slider m_AttackKnob{};
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Fader_RiderAudioProcessorEditor)
 };

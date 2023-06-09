@@ -164,29 +164,14 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
 	m_pValueTreeState.UpdateParameterSettings();
 
-	float averageGain{ 0.f };
-	for (int channel = 0; channel < totalNumInputChannels; ++channel)
-	{
-		const float level = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
-		averageGain += juce::Decibels::gainToDecibels(level);
-	}
-	averageGain /= totalNumInputChannels;
-	m_pValueTreeState.SetGainLevel(averageGain);
-
+	// Noise gate
 	const ParameterSettings params = m_pValueTreeState.GetParameterSettings();
-
-	auto leftGain = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
-	auto rightGain = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
-
 	m_RightChannel.get<0>().setThreshold(params.VocalSensitivity);
 	m_LeftChannel.get<0>().setThreshold(params.VocalSensitivity);
 
-	leftGain += params.FaderLevel;
-	rightGain += params.FaderLevel;
+	UpdateGain(buffer, totalNumInputChannels);
 
-	m_LeftChannel.get<1>().setGainDecibels(leftGain);
-	m_RightChannel.get<1>().setGainDecibels(rightGain);
-
+	// DSP processing
 	const juce::dsp::AudioBlock<float> block(buffer);
 	auto leftBlock = block.getSingleChannelBlock(0);
 	auto rightBlock = block.getSingleChannelBlock(1);
@@ -206,22 +191,59 @@ bool Fader_RiderAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* Fader_RiderAudioProcessor::createEditor()
 {
-	//return new Fader_RiderAudioProcessorEditor(*this);
-	return new juce::GenericAudioProcessorEditor(*this);
+	return new Fader_RiderAudioProcessorEditor(*this);
+	//return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
-void Fader_RiderAudioProcessor::getStateInformation(juce::MemoryBlock& /*destData*/)
+void Fader_RiderAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
 	// You should use this method to store your parameters in the memory block.
 	// You could do that either as raw data, or use the XML or ValueTree classes
 	// as intermediaries to make it easy to save and load complex data.
+
+	juce::MemoryOutputStream mos(destData, true);
+	m_pValueTreeState.state.writeToStream(mos);
 }
 
-void Fader_RiderAudioProcessor::setStateInformation(const void* /*data*/, int /*sizeInBytes*/)
+void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
 	// You should use this method to restore your parameters from this memory block,
 	// whose contents will have been created by the getStateInformation() call.
+
+	auto newTree = juce::ValueTree::readFromData(data, sizeInBytes);
+	if(newTree.isValid())
+	{
+		m_pValueTreeState.replaceState(newTree);
+		m_pValueTreeState.UpdateParameterSettings();
+	}
+
+}
+
+void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int numInputChannels)
+{
+	float averageGain{ 0.f };
+	for (int channel = 0; channel < numInputChannels; ++channel)
+	{
+		const float level = buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+		averageGain += juce::Decibels::gainToDecibels(level);
+	}
+	averageGain /= numInputChannels;
+	m_pValueTreeState.SetGainLevel(averageGain);
+
+	const ParameterSettings params = m_pValueTreeState.GetParameterSettings();
+
+	auto leftGain = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+	auto rightGain = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+
+	leftGain += params.FaderLevel;
+	rightGain += params.FaderLevel;
+
+	m_LeftChannel.get<1>().setGainDecibels(leftGain);
+	m_RightChannel.get<1>().setGainDecibels(rightGain);
+
+	m_LeftChannel.get<1>().setRampDurationSeconds(params.Attack / 100);// attack is in ms
+	m_RightChannel.get<1>().setRampDurationSeconds(params.Attack / 100);
 }
 
 //==============================================================================

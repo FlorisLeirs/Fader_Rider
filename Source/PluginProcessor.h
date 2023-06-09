@@ -83,6 +83,8 @@ private:
 
 	LevelAdjuster m_LeftChannel, m_RightChannel;
 
+	void UpdateGain(juce::AudioBuffer<float>& buffer, int numInputChannels);
+
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fader_RiderAudioProcessor)
 };
