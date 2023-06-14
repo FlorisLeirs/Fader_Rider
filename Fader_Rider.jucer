@@ -5,6 +5,10 @@
               cppLanguageStandard="20" companyName="FlorisL" pluginVST3Category="Tools">
   <MAINGROUP id="DtYvQU" name="FaderRider">
     <GROUP id="{EC529A27-8A67-85CA-21F4-9D85F035CAD4}" name="Source">
+      <GROUP id="{3E5896B8-2619-3CA9-CC53-AD3702A8BD2B}" name="3rdParty">
+        <FILE id="TSk42W" name="MultiValueAttachedControlBase.h" compile="0"
+              resource="0" file="Source/3rdParty/MultiValueAttachedControlBase.h"/>
+      </GROUP>
       <FILE id="h9lRho" name="FaderValueTree.h" compile="0" resource="0"
             file="Source/FaderValueTree.h"/>
       <FILE id="mqNJDg" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -16,6 +20,8 @@
       <FILE id="bBQj0G" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="fP4G4b" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="pb1eIb" name="InputSlider.cpp" compile="1" resource="0" file="Source/InputSlider.cpp"/>
+      <FILE id="xt8ghN" name="InputSlider.h" compile="0" resource="0" file="Source/InputSlider.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

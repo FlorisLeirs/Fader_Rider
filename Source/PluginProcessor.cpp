@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 
 #include "PluginEditor.h"
+#include "FaderValueTree.h"
 
 //==============================================================================
 Fader_RiderAudioProcessor::Fader_RiderAudioProcessor()
@@ -23,7 +24,7 @@ Fader_RiderAudioProcessor::Fader_RiderAudioProcessor()
 	)
 #endif
 {
-
+	m_pValueTreeState = std::make_unique<FaderValueTree>(*this);
 }
 
 Fader_RiderAudioProcessor::~Fader_RiderAudioProcessor()
@@ -97,7 +98,7 @@ void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 {
 	// Use this method as the place to do any pre-playback
 	// initialisation that you need..
-	m_pValueTreeState.UpdateParameterSettings();
+	m_pValueTreeState->UpdateParameterSettings();
 
 	juce::dsp::ProcessSpec spec{};
 
@@ -162,10 +163,10 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
-	m_pValueTreeState.UpdateParameterSettings();
+	m_pValueTreeState->UpdateParameterSettings();
 
 	// Noise gate
-	const ParameterSettings params = m_pValueTreeState.GetParameterSettings();
+	const ParameterSettings params = m_pValueTreeState->GetParameterSettings();
 	m_RightChannel.get<0>().setThreshold(params.VocalSensitivity);
 	m_LeftChannel.get<0>().setThreshold(params.VocalSensitivity);
 
@@ -203,7 +204,7 @@ void Fader_RiderAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 	// as intermediaries to make it easy to save and load complex data.
 
 	juce::MemoryOutputStream mos(destData, true);
-	m_pValueTreeState.state.writeToStream(mos);
+	m_pValueTreeState->state.writeToStream(mos);
 }
 
 void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
@@ -214,8 +215,8 @@ void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeIn
 	auto newTree = juce::ValueTree::readFromData(data, sizeInBytes);
 	if(newTree.isValid())
 	{
-		m_pValueTreeState.replaceState(newTree);
-		m_pValueTreeState.UpdateParameterSettings();
+		m_pValueTreeState->replaceState(newTree);
+		m_pValueTreeState->UpdateParameterSettings();
 	}
 
 }
@@ -229,9 +230,10 @@ void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int
 		averageGain += juce::Decibels::gainToDecibels(level);
 	}
 	averageGain /= numInputChannels;
-	m_pValueTreeState.SetGainLevel(averageGain);
+	m_RMS = averageGain;
+	m_pValueTreeState->SetGainLevel(m_RMS);
 
-	const ParameterSettings params = m_pValueTreeState.GetParameterSettings();
+	const ParameterSettings params = m_pValueTreeState->GetParameterSettings();
 
 	auto leftGain = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
 	auto rightGain = buffer.getRMSLevel(1, 0, buffer.getNumSamples());

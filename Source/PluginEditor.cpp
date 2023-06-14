@@ -15,17 +15,17 @@ using juce::Slider;
 //==============================================================================
 Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudioProcessor& p)
 	: AudioProcessorEditor(&p), audioProcessor(p)
-	, m_OutputAttachment(p.m_pValueTreeState, "Output", m_OutputSlider)
-	, m_FaderAttachment(p.m_pValueTreeState, "FaderLevel", m_FaderLevel)
-	, m_TargetAttachment(p.m_pValueTreeState, "TargetLevel", m_TargetLevel)
-	, m_VocalAttachment(p.m_pValueTreeState, "VocalSensitivity", m_VocalSensitivity)
-	, m_AttackAttachment(p.m_pValueTreeState, "Attack", m_AttackKnob)
+	, m_OutputAttachment(*p.GetValueTree(), "Output", m_OutputSlider)
+	, m_FaderAttachment(*p.GetValueTree(), "FaderLevel", m_FaderLevel)
+	, m_TargetAttachment(*p.GetValueTree(), "TargetLevel", m_TargetLevel)
+	, m_VocalAttachment(*p.GetValueTree(), "VocalSensitivity", m_VocalSensitivity)
+	, m_AttackAttachment(*p.GetValueTree(), "Attack", m_AttackKnob)
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
 	setSize(400, 600);
 	InitializeSliders();
-	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(p.m_pValueTreeState, "RangeMin", "RangeMax", m_MinMaxSlider );
+	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), "RangeMin", "RangeMax", m_MinMaxSlider );
 
 }
 
@@ -67,32 +67,32 @@ void Fader_RiderAudioProcessorEditor::resized()
 void Fader_RiderAudioProcessorEditor::InitializeSliders()
 {
 	m_MinMaxSlider.setSliderStyle(Slider::TwoValueVertical);
-	m_MinMaxSlider.setMinValue(audioProcessor.m_pValueTreeState.GetParameterSettings().RangeMin);
-	m_MinMaxSlider.setMaxValue(audioProcessor.m_pValueTreeState.GetParameterSettings().RangeMax);
+	m_MinMaxSlider.setMinValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMin);
+	m_MinMaxSlider.setMaxValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMax);
 	m_MinMaxSlider.setTextValueSuffix("dB");
 	m_MinMaxSlider.setTextBoxStyle(Slider::TextBoxLeft, false, 50, 25);
 
 	m_FaderLevel.setSliderStyle(Slider::LinearVertical);
-	m_FaderLevel.setValue(audioProcessor.m_pValueTreeState.GetParameterSettings().FaderLevel);
+	m_FaderLevel.setValue(audioProcessor.GetValueTree()->GetParameterSettings().FaderLevel);
 	m_FaderLevel.setTextValueSuffix("dB");
 	m_FaderLevel.setTextBoxStyle(Slider::TextBoxAbove, true, 50, 25);
 
 	m_OutputSlider.setSliderStyle(Slider::LinearVertical);
-	m_OutputSlider.setValue(audioProcessor.m_pValueTreeState.GetParameterSettings().Output);
+	m_OutputSlider.setValue(audioProcessor.GetValueTree()->GetParameterSettings().Output);
 	m_OutputSlider.setTextValueSuffix("dB");
 	m_OutputSlider.setTextBoxStyle(Slider::TextBoxRight, false, 50, 25);
 
 	m_TargetLevel.setSliderStyle(Slider::LinearHorizontal);
-	m_TargetLevel.setValue(audioProcessor.m_pValueTreeState.GetParameterSettings().TargetLevel);
+	m_TargetLevel.setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 	m_TargetLevel.setTextValueSuffix("dB");
 	m_TargetLevel.setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
 
 	m_VocalSensitivity.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-	m_VocalSensitivity.setValue(audioProcessor.m_pValueTreeState.GetParameterSettings().VocalSensitivity);
+	m_VocalSensitivity.setValue(audioProcessor.GetValueTree()->GetParameterSettings().VocalSensitivity);
 	m_VocalSensitivity.setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
 
 	m_AttackKnob.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-	m_AttackKnob.setValue(audioProcessor.m_pValueTreeState.GetParameterSettings().Attack);
+	m_AttackKnob.setValue(audioProcessor.GetValueTree()->GetParameterSettings().Attack);
 	m_AttackKnob.setTextValueSuffix("ms");
 	m_AttackKnob.setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
 

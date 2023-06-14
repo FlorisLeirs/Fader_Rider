@@ -12,20 +12,6 @@
 
 #include "FaderValueTree.h"
 
-//struct ParameterSettings
-//{
-//	float TargetLevel{1.f};
-//    float FaderLevel{1.f};
-//    float RangeMax{1.f};
-//    float RangeMin{0.f};
-//    float VocalSensitivity{0.5f};
-//    float MusicSensitivity{0.2f};
-//    float Output{1.f};
-//    float Attack{0.f};
-//
-//    void DbToGain();
-//
-//};
 
 class FaderValueTree;
 //==============================================================================
@@ -74,13 +60,16 @@ public:
 	void getStateInformation(juce::MemoryBlock& destData) override;
 	void setStateInformation(const void* data, int sizeInBytes) override;
 
-	FaderValueTree m_pValueTreeState{*this};
+	std::unique_ptr<FaderValueTree>& GetValueTree() { return m_pValueTreeState; }
+	float GetRMS() const { return m_RMS; }
 
 private:
 	using Gain = juce::dsp::Gain<float>;
 	using NoiseGate = juce::dsp::NoiseGate<float>;
 	using LevelAdjuster = juce::dsp::ProcessorChain<NoiseGate, Gain>;
 
+	std::unique_ptr<FaderValueTree> m_pValueTreeState = nullptr;
+	float m_RMS{};
 	LevelAdjuster m_LeftChannel, m_RightChannel;
 
 	void UpdateGain(juce::AudioBuffer<float>& buffer, int numInputChannels);
