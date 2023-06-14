@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+class TwoValueSliderAttachment;
 //==============================================================================
 /**
 */
@@ -35,6 +36,17 @@ private:
     juce::Slider m_TargetLevel{};
     juce::Slider m_VocalSensitivity{};
     juce::Slider m_AttackKnob{};
+
+    using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+    std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
+    Attachment m_OutputAttachment;
+    Attachment m_FaderAttachment;
+    Attachment m_TargetAttachment;
+    Attachment m_VocalAttachment;
+    Attachment m_AttackAttachment;
+
+
+    void InitializeSliders();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Fader_RiderAudioProcessorEditor)
 };
