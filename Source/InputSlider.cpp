@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    InputSlider.cpp
-    Created: 14 Jun 2023 2:24:10pm
-    Author:  flori
+	InputSlider.cpp
+	Created: 14 Jun 2023 2:24:10pm
+	Author:  flori
 
   ==============================================================================
 */
@@ -11,41 +11,77 @@
 #include <JuceHeader.h>
 #include "InputSlider.h"
 
+InputLookAndFeel::InputLookAndFeel()
+	:LookAndFeel_V4()
+{
+}
+
+InputLookAndFeel::~InputLookAndFeel()
+{
+}
+
+void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
+	float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle,
+	juce::Slider&)
+{
+	const auto bounds = juce::Rectangle<float>(static_cast<float>(x), static_cast<float>(y),
+		static_cast<float>(width), static_cast<float>(height));
+
+	g.setColour(juce::Colours::yellowgreen);
+	g.fillRect(bounds);
+
+	g.setColour(juce::Colours::lightgrey);
+	g.drawRect(bounds, 2.f);
+}
+
 //==============================================================================
 InputSlider::InputSlider()
+	: Slider()
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+	setSliderStyle(Slider::LinearHorizontal);
+	setTextValueSuffix("dB");
+	setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
 
+	m_pLookAndFeel = std::make_unique<InputLookAndFeel>();
+	setLookAndFeel(m_pLookAndFeel.get());
 }
 
 InputSlider::~InputSlider()
 {
+	setLookAndFeel(nullptr);
 }
 
-void InputSlider::paint (juce::Graphics& g)
+void InputSlider::paint(juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
 
-       You should replace everything in this method with your own
-       drawing code..
-    */
+	auto range = getRange();
+	auto sliderBounds = GetSliderBounds();
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+	//getLookAndFeel().drawLinearSlider(g, sliderBounds.getX(), sliderBounds.getY(),
+	//	sliderBounds.getWidth(),
+	//	sliderBounds.getHeight(),
+	//	juce::jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
+	//	sliderBounds.getX(), sliderBounds.getRight(),
+	//	getSliderStyle(), *this);
 
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+	g.setColour(juce::Colours::grey);
+	g.fillRect(sliderBounds);
 
-    g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("InputSlider", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+	g.setColour(juce::Colours::lightgrey);
+	const auto levelX = juce::jmap(static_cast<double>(m_InputLevel), range.getStart(), range.getEnd(),
+		0.0, (double)sliderBounds.getWidth());
+
+	g.fillRect(sliderBounds.removeFromLeft(levelX));
 }
 
 void InputSlider::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+	// This method is where you should set the bounds of any child
+	// components that your component contains..
 
+}
+
+juce::Rectangle<float> InputSlider::GetSliderBounds() const
+{
+	return getLocalBounds().toFloat();
 }

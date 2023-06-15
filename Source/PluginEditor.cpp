@@ -10,14 +10,16 @@
 #include "PluginEditor.h"
 
 #include "3rdParty/MultiValueAttachedControlBase.h"
+#include "InputSlider.h"
 
 using juce::Slider;
 //==============================================================================
 Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudioProcessor& p)
 	: AudioProcessorEditor(&p), audioProcessor(p)
+	, m_pTargetLevel(std::make_unique<InputSlider>())
 	, m_OutputAttachment(*p.GetValueTree(), "Output", m_OutputSlider)
 	, m_FaderAttachment(*p.GetValueTree(), "FaderLevel", m_FaderLevel)
-	, m_TargetAttachment(*p.GetValueTree(), "TargetLevel", m_TargetLevel)
+	, m_TargetAttachment(*p.GetValueTree(), "TargetLevel", *m_pTargetLevel)
 	, m_VocalAttachment(*p.GetValueTree(), "VocalSensitivity", m_VocalSensitivity)
 	, m_AttackAttachment(*p.GetValueTree(), "Attack", m_AttackKnob)
 {
@@ -25,8 +27,8 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	// editor's size to whatever you need it to be.
 	setSize(400, 600);
 	InitializeSliders();
-	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), "RangeMin", "RangeMax", m_MinMaxSlider );
-
+	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), "RangeMin", "RangeMax", m_MinMaxSlider);
+	startTimerHz(24);
 }
 
 Fader_RiderAudioProcessorEditor::~Fader_RiderAudioProcessorEditor()
@@ -54,7 +56,7 @@ void Fader_RiderAudioProcessorEditor::resized()
 	auto bounds = getLocalBounds();
 	auto topArea = bounds.removeFromTop(bounds.getHeight() / 3);
 
-	m_TargetLevel.setBounds(topArea.removeFromTop(topArea.getHeight() / 3));
+	m_pTargetLevel->setBounds(topArea.removeFromTop(topArea.getHeight() / 3));
 	m_AttackKnob.setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
 	m_VocalSensitivity.setBounds(topArea.removeFromLeft(topArea.getWidth()));
 
@@ -62,6 +64,12 @@ void Fader_RiderAudioProcessorEditor::resized()
 	m_FaderLevel.setBounds(bounds.removeFromLeft(bounds.getWidth() / 2));
 	m_OutputSlider.setBounds(bounds);
 
+}
+
+void Fader_RiderAudioProcessorEditor::timerCallback()
+{
+	m_pTargetLevel->SetInputLevel(audioProcessor.GetRMS());
+	m_pTargetLevel->repaint();
 }
 
 void Fader_RiderAudioProcessorEditor::InitializeSliders()
@@ -82,10 +90,7 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_OutputSlider.setTextValueSuffix("dB");
 	m_OutputSlider.setTextBoxStyle(Slider::TextBoxRight, false, 50, 25);
 
-	m_TargetLevel.setSliderStyle(Slider::LinearHorizontal);
-	m_TargetLevel.setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
-	m_TargetLevel.setTextValueSuffix("dB");
-	m_TargetLevel.setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
+	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 
 	m_VocalSensitivity.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	m_VocalSensitivity.setValue(audioProcessor.GetValueTree()->GetParameterSettings().VocalSensitivity);
@@ -99,7 +104,7 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	addAndMakeVisible(m_MinMaxSlider);
 	addAndMakeVisible(m_FaderLevel);
 	addAndMakeVisible(m_OutputSlider);
-	addAndMakeVisible(m_TargetLevel);
+	addAndMakeVisible(*m_pTargetLevel);
 	addAndMakeVisible(m_VocalSensitivity);
 	addAndMakeVisible(m_AttackKnob);
 }

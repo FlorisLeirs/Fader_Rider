@@ -96,9 +96,8 @@ void Fader_RiderAudioProcessor::changeProgramName(int /*index*/, const juce::Str
 //==============================================================================
 void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-	// Use this method as the place to do any pre-playback
-	// initialisation that you need..
 	m_pValueTreeState->UpdateParameterSettings();
+	m_pValueTreeState->SetBlockRate(static_cast<float>(sampleRate / samplesPerBlock));
 
 	juce::dsp::ProcessSpec spec{};
 

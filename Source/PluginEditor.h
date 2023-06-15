@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin editor.
+	This file contains the basic framework code for a JUCE plugin editor.
 
   ==============================================================================
 */
@@ -9,44 +9,46 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "PluginProcessor.h"
 
+class InputSlider;
 class TwoValueSliderAttachment;
 //==============================================================================
 /**
 */
-class Fader_RiderAudioProcessorEditor  : public juce::AudioProcessorEditor
+class Fader_RiderAudioProcessorEditor : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
-    Fader_RiderAudioProcessorEditor (Fader_RiderAudioProcessor&);
-    ~Fader_RiderAudioProcessorEditor() override;
+	Fader_RiderAudioProcessorEditor(Fader_RiderAudioProcessor&);
+	~Fader_RiderAudioProcessorEditor() override;
 
-    //==============================================================================
-    void paint (juce::Graphics&) override;
-    void resized() override;
+	//==============================================================================
+	void paint(juce::Graphics&) override;
+	void resized() override;
+
+	void timerCallback() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    Fader_RiderAudioProcessor& audioProcessor;
+	// This reference is provided as a quick way for your editor to
+	// access the processor object that created it.
+	Fader_RiderAudioProcessor& audioProcessor;
 
-    juce::Slider m_MinMaxSlider{};
-    juce::Slider m_OutputSlider{};
-    juce::Slider m_FaderLevel{};
-    juce::Slider m_TargetLevel{};
-    juce::Slider m_VocalSensitivity{};
-    juce::Slider m_AttackKnob{};
+	juce::Slider m_MinMaxSlider{};
+	juce::Slider m_OutputSlider{};
+	juce::Slider m_FaderLevel{};
+	std::unique_ptr<InputSlider> m_pTargetLevel = nullptr;
+	juce::Slider m_VocalSensitivity{};
+	juce::Slider m_AttackKnob{};
 
-    using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-    std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
-    Attachment m_OutputAttachment;
-    Attachment m_FaderAttachment;
-    Attachment m_TargetAttachment;
-    Attachment m_VocalAttachment;
-    Attachment m_AttackAttachment;
+	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+	std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
+	Attachment m_OutputAttachment;
+	Attachment m_FaderAttachment;
+	Attachment m_TargetAttachment;
+	Attachment m_VocalAttachment;
+	Attachment m_AttackAttachment;
 
 
-    void InitializeSliders();
+	void InitializeSliders();
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Fader_RiderAudioProcessorEditor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fader_RiderAudioProcessorEditor)
 };

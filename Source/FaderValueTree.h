@@ -24,9 +24,11 @@ public:
 	void UpdateParameterSettings();
 	void SetGainLevel(float currentGain);
 
-	ParameterSettings GetParameterSettings() const { return m_Parameters; };
+	ParameterSettings GetParameterSettings() const { return m_Parameters; }
+	void SetBlockRate(float blockRate) { m_BlockRate = blockRate; }
 private:
 	ParameterSettings m_Parameters{};
+	float m_BlockRate{};
 
 	ParameterLayout CreateParameterLayout();
 

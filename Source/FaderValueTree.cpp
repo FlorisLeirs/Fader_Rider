@@ -48,10 +48,9 @@ void FaderValueTree::SetGainLevel(float currentGain)
 {
 	float targetFader = 0.f;
 	if (currentGain > m_Parameters.VocalSensitivity)
-	{
-		const float gainOffset = m_Parameters.TargetLevel - currentGain;
-		targetFader = std::clamp(gainOffset, m_Parameters.RangeMin, m_Parameters.RangeMax);
-	}
+		targetFader = m_Parameters.TargetLevel - currentGain;
+
+	m_Parameters.FaderLevel = std::clamp(targetFader, m_Parameters.RangeMin, m_Parameters.RangeMax);
 
 	//m_Parameters.FaderLevel = std::lerp(m_Parameters.FaderLevel, targetFader, )
 	getParameter("FaderLevel")->setValueNotifyingHost((m_Parameters.FaderLevel + 12) / 24.f);
