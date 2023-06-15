@@ -20,12 +20,11 @@ InputLookAndFeel::~InputLookAndFeel()
 {
 }
 
-void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
-	float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle,
+void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height, float /*sliderPos*/,
+	float /*minSliderPos*/, float /*maxSliderPos*/, const juce::Slider::SliderStyle,
 	juce::Slider&)
 {
-	const auto bounds = juce::Rectangle<float>(static_cast<float>(x), static_cast<float>(y),
-		static_cast<float>(width), static_cast<float>(height));
+	const auto bounds = juce::Rectangle(x, y, width, height).toFloat();
 
 	g.setColour(juce::Colours::yellowgreen);
 	g.fillRect(bounds);
@@ -38,12 +37,16 @@ void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wid
 InputSlider::InputSlider()
 	: Slider()
 {
+	setScrollWheelEnabled(true);
 	setSliderStyle(Slider::LinearHorizontal);
 	setTextValueSuffix("dB");
 	setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
 
 	m_pLookAndFeel = std::make_unique<InputLookAndFeel>();
 	setLookAndFeel(m_pLookAndFeel.get());
+	setSliderSnapsToMousePosition(false);
+	//setVelocityBasedMode(true);
+	//setvel
 }
 
 InputSlider::~InputSlider()
@@ -57,21 +60,23 @@ void InputSlider::paint(juce::Graphics& g)
 	auto range = getRange();
 	auto sliderBounds = GetSliderBounds();
 
-	//getLookAndFeel().drawLinearSlider(g, sliderBounds.getX(), sliderBounds.getY(),
-	//	sliderBounds.getWidth(),
-	//	sliderBounds.getHeight(),
-	//	juce::jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
-	//	sliderBounds.getX(), sliderBounds.getRight(),
-	//	getSliderStyle(), *this);
-
 	g.setColour(juce::Colours::grey);
 	g.fillRect(sliderBounds);
 
-	g.setColour(juce::Colours::lightgrey);
+	g.setColour(juce::Colours::goldenrod);
 	const auto levelX = juce::jmap(static_cast<double>(m_InputLevel), range.getStart(), range.getEnd(),
-		0.0, (double)sliderBounds.getWidth());
+		static_cast<double>(m_SliderOffset), static_cast<double>(sliderBounds.getWidth()));
 
-	g.fillRect(sliderBounds.removeFromLeft(levelX));
+	const auto sliderPos = juce::jmap(getValue(), range.getStart(), range.getEnd(),
+		static_cast<double>(m_SliderOffset), static_cast<double>(sliderBounds.getWidth()));
+
+	g.fillRect(sliderBounds.removeFromLeft(static_cast<float>(levelX)));
+
+	g.setColour(juce::Colours::white);
+	auto thumbRect = juce::Rectangle<float>{
+		static_cast<float>(sliderPos) - m_ThumbWidth / 2.f, sliderBounds.getY(), m_ThumbWidth, sliderBounds.getHeight()
+	};
+	g.fillRoundedRectangle(thumbRect, 2.f);
 }
 
 void InputSlider::resized()
@@ -83,5 +88,12 @@ void InputSlider::resized()
 
 juce::Rectangle<float> InputSlider::GetSliderBounds() const
 {
-	return getLocalBounds().toFloat();
+	//return getLocalBounds().toFloat();
+
+	auto bounds = getLocalBounds().toFloat();
+	bounds.removeFromTop(static_cast<float>(getTextBoxHeight()));
+	bounds.removeFromLeft(m_SliderOffset);
+	bounds.removeFromRight(m_SliderOffset);
+	bounds.removeFromBottom(m_SliderOffset);
+	return bounds;
 }

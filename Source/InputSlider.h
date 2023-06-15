@@ -48,5 +48,7 @@ public:
 private:
 	std::unique_ptr<InputLookAndFeel> m_pLookAndFeel = nullptr;
 	float m_InputLevel{-15.f};
+	float m_SliderOffset{5.f};
+	float m_ThumbWidth{10.f};
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(InputSlider)
 };
