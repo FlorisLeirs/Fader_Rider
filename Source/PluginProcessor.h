@@ -61,7 +61,7 @@ public:
 	void setStateInformation(const void* data, int sizeInBytes) override;
 
 	std::unique_ptr<FaderValueTree>& GetValueTree() { return m_pValueTreeState; }
-	float GetRMS() const { return m_RMS; }
+	float GetRMS() const { return m_RMS.getCurrentValue(); }
 
 private:
 	using Gain = juce::dsp::Gain<float>;
@@ -69,7 +69,7 @@ private:
 	using LevelAdjuster = juce::dsp::ProcessorChain<NoiseGate, Gain>;
 
 	std::unique_ptr<FaderValueTree> m_pValueTreeState = nullptr;
-	float m_RMS{};
+	juce::LinearSmoothedValue<float> m_RMS{};
 	LevelAdjuster m_LeftChannel, m_RightChannel;
 
 	void UpdateGain(juce::AudioBuffer<float>& buffer, int numInputChannels);

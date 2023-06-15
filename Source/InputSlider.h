@@ -43,12 +43,20 @@ public:
 	void resized() override;
 
 	void SetInputLevel(float inputLevel) { m_InputLevel = inputLevel; }
+
+	float GetInputLevel() const { return m_InputLevel; }
+	float GetSliderOffset() const { return m_SliderOffset; }
+	float GetThumbWidth() const { return m_ThumbWidth; }
 	juce::Rectangle<float> GetSliderBounds() const;
+	float GetTextHeight() const { return m_TextHeight; }
+	juce::String GetTextStr();
 
 private:
 	std::unique_ptr<InputLookAndFeel> m_pLookAndFeel = nullptr;
-	float m_InputLevel{-15.f};
-	float m_SliderOffset{5.f};
-	float m_ThumbWidth{10.f};
+	float m_InputLevel{ -15.f };
+	const float m_SliderOffset{ 15.f };
+	const float m_ThumbWidth{ 10.f };
+	const float m_TextHeight{ 15.f };
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(InputSlider)
 };

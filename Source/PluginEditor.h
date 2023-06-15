@@ -32,6 +32,8 @@ private:
 	// access the processor object that created it.
 	Fader_RiderAudioProcessor& audioProcessor;
 
+	juce::Rectangle<int> m_TopArea{};
+
 	juce::Slider m_MinMaxSlider{};
 	juce::Slider m_OutputSlider{};
 	juce::Slider m_FaderLevel{};

@@ -42,6 +42,9 @@ void Fader_RiderAudioProcessorEditor::paint(juce::Graphics& g)
 	// (Our component is opaque, so we must completely fill the background with a solid colour)
 	g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
+	g.setColour(juce::Colours::grey);
+	g.fillRect(m_TopArea);
+
 	g.setColour(juce::Colours::white);
 	g.setFont(15.0f);
 	//g.drawFittedText("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
@@ -55,6 +58,7 @@ void Fader_RiderAudioProcessorEditor::resized()
 
 	auto bounds = getLocalBounds();
 	auto topArea = bounds.removeFromTop(bounds.getHeight() / 3);
+	m_TopArea = topArea;
 
 	m_pTargetLevel->setBounds(topArea.removeFromTop(topArea.getHeight() / 3));
 	m_AttackKnob.setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));

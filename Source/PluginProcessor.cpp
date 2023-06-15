@@ -113,6 +113,9 @@ void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
 
 	m_RightChannel.get<0>().setAttack(0.f);
 	m_LeftChannel.get<0>().setAttack(0.f);
+
+	m_RMS.reset(sampleRate, 0.2);
+	m_RMS.setCurrentAndTargetValue(-100.f);
 }
 
 void Fader_RiderAudioProcessor::releaseResources()
@@ -212,7 +215,7 @@ void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeIn
 	// whose contents will have been created by the getStateInformation() call.
 
 	auto newTree = juce::ValueTree::readFromData(data, sizeInBytes);
-	if(newTree.isValid())
+	if (newTree.isValid())
 	{
 		m_pValueTreeState->replaceState(newTree);
 		m_pValueTreeState->UpdateParameterSettings();
@@ -230,7 +233,15 @@ void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int
 	}
 	averageGain /= numInputChannels;
 	m_RMS = averageGain;
-	m_pValueTreeState->SetGainLevel(m_RMS);
+
+	if (averageGain > m_RMS.getCurrentValue())
+		m_RMS.setCurrentAndTargetValue(averageGain);
+	else
+		m_RMS.setTargetValue(averageGain);
+
+	m_RMS.skip(buffer.getNumSamples());
+
+	m_pValueTreeState->SetGainLevel(m_RMS.getCurrentValue());
 
 	const ParameterSettings params = m_pValueTreeState->GetParameterSettings();
 
