@@ -35,7 +35,7 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.RangeMin = getRawParameterValue("RangeMin")->load();
 	m_Parameters.RangeMax = getRawParameterValue("RangeMax")->load();
 	m_Parameters.TargetLevel = getRawParameterValue("TargetLevel")->load();
-	m_Parameters.FaderLevel = getRawParameterValue("FaderLevel")->load();
+	//m_Parameters.FaderLevel = getRawParameterValue("FaderLevel")->load(); // not loaded because should not be changed in other externally
 	m_Parameters.VocalSensitivity = getRawParameterValue("VocalSensitivity")->load();
 	m_Parameters.MusicSensitivity = getRawParameterValue("MusicSensitivity")->load();
 	m_Parameters.Output = getRawParameterValue("Output")->load();
@@ -50,10 +50,10 @@ void FaderValueTree::SetGainLevel(float currentGain)
 	if (currentGain > m_Parameters.VocalSensitivity)
 		targetFader = m_Parameters.TargetLevel - currentGain;
 
-	m_Parameters.FaderLevel = std::clamp(targetFader, m_Parameters.RangeMin, m_Parameters.RangeMax);
-
+	targetFader = std::clamp(targetFader, m_Parameters.RangeMin, m_Parameters.RangeMax);
+	m_Parameters.FaderLevel = std::lerp(m_Parameters.FaderLevel, targetFader,  1.f / m_Smoothing);
 	//m_Parameters.FaderLevel = std::lerp(m_Parameters.FaderLevel, targetFader, )
-	getParameter("FaderLevel")->setValueNotifyingHost((m_Parameters.FaderLevel + 12) / 24.f);
+	getParameter("FaderLevel")->setValueNotifyingHost((m_Parameters.FaderLevel + 12.f) / 24.f);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParameterLayout()

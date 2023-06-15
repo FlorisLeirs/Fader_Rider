@@ -97,7 +97,7 @@ void Fader_RiderAudioProcessor::changeProgramName(int /*index*/, const juce::Str
 void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
 	m_pValueTreeState->UpdateParameterSettings();
-	m_pValueTreeState->SetBlockRate(static_cast<float>(sampleRate / samplesPerBlock));
+	//m_pValueTreeState->SetBlockRate(static_cast<float>(sampleRate / samplesPerBlock));
 
 	juce::dsp::ProcessSpec spec{};
 
