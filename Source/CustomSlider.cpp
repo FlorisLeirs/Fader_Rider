@@ -32,19 +32,22 @@ CustomSlider::~CustomSlider()
 
 void CustomSlider::paint(juce::Graphics& g)
 {
-	const float startAngle = juce::degreesToRadians(180.f + 60.f);
-	const float endAngle = juce::degreesToRadians(180.f - 60.f) + juce::MathConstants<float>::twoPi;
-
-	const auto bounds = GetSliderBounds().toNearestInt();
-	getLookAndFeel().drawRotarySlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),
-		static_cast<float>(getValue()), startAngle, endAngle, *this);
-	if(auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label)
+	const auto sliderStyle = getSliderStyle();
+	if (sliderStyle == Rotary || sliderStyle == RotaryHorizontalDrag || sliderStyle == RotaryHorizontalVerticalDrag ||
+		sliderStyle == RotaryVerticalDrag)
 	{
-		if(!label->isBeingEdited())
-			label->setText(GetTextStr(), juce::dontSendNotification);
-		//label.pain
+		const float startAngle = juce::degreesToRadians(180.f + 60.f);
+		const float endAngle = juce::degreesToRadians(180.f - 60.f) + juce::MathConstants<float>::twoPi;
+
+		const auto bounds = GetSliderBounds().toNearestInt();
+		getLookAndFeel().drawRotarySlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),
+			static_cast<float>(getValue()), startAngle, endAngle, *this);
 	}
-	//getChildComponent(0)->paint(g);
+
+	if (auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label && !label->isBeingEdited())
+		label->setText(GetTextStr(), juce::dontSendNotification);
+
+
 }
 
 void CustomSlider::resized()

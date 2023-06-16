@@ -7,10 +7,10 @@ struct ParameterSettings
 	float FaderLevel{ 1.f };
 	float RangeMax{ 1.f };
 	float RangeMin{ 0.f };
-	float VocalSensitivity{ 0.5f };
+	float Threshold{ 0.5f };
 	float MusicSensitivity{ 0.2f };
 	float Output{ 1.f };
-	float Attack{ 0.f };
+	float Ramp{ 0.f };
 
 	void DbToGain();
 
@@ -23,11 +23,15 @@ public:
 
 	void UpdateParameterSettings();
 	void SetGainLevel(float currentGain);
+	void SetSampleRate(int sampleRate) { m_SampleRate = sampleRate; }
+	void SetSamplesPerBlock(int samplesPerBlock) { m_SamplesPerBlock = samplesPerBlock; }
 
 	ParameterSettings GetParameterSettings() const { return m_Parameters; }
 private:
 	ParameterSettings m_Parameters{};
-	const float m_Smoothing{20.f};
+	juce::SmoothedValue<float> m_Smoothing{0.f};
+	int m_SampleRate{};
+	int m_SamplesPerBlock{};
 
 	ParameterLayout CreateParameterLayout();
 

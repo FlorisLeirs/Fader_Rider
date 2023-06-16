@@ -18,7 +18,7 @@ void ParameterSettings::DbToGain()
 	//	           ? juce::Decibels::decibelsToGain(fabs(RangeMin)) * -1.f
 	//	           : juce::Decibels::decibelsToGain(fabs(RangeMin));
 
-	VocalSensitivity = juce::Decibels::decibelsToGain(VocalSensitivity);
+	Threshold = juce::Decibels::decibelsToGain(Threshold);
 	MusicSensitivity = juce::Decibels::decibelsToGain(MusicSensitivity);
 	Output = juce::Decibels::decibelsToGain(Output);
 
@@ -36,10 +36,14 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.RangeMax = getRawParameterValue("RangeMax")->load();
 	m_Parameters.TargetLevel = getRawParameterValue("TargetLevel")->load();
 	//m_Parameters.FaderLevel = getRawParameterValue("FaderLevel")->load(); // not loaded because should not be changed in other externally
-	m_Parameters.VocalSensitivity = getRawParameterValue("VocalSensitivity")->load();
+	m_Parameters.Threshold = getRawParameterValue("Threshold")->load();
 	m_Parameters.MusicSensitivity = getRawParameterValue("MusicSensitivity")->load();
 	m_Parameters.Output = getRawParameterValue("Output")->load();
-	m_Parameters.Attack = getRawParameterValue("Attack")->load();
+
+	float prevRamp = m_Parameters.Ramp;
+	m_Parameters.Ramp = getRawParameterValue("Ramp")->load();
+	if (!juce::approximatelyEqual(prevRamp, m_Parameters.Ramp))
+		m_Smoothing.reset(m_SampleRate, m_Parameters.Ramp / 1000);
 
 	//m_Parameters.DbToGain();
 }
@@ -47,12 +51,16 @@ void FaderValueTree::UpdateParameterSettings()
 void FaderValueTree::SetGainLevel(float currentGain)
 {
 	float targetFader = 0.f;
-	if (currentGain > m_Parameters.VocalSensitivity)
+	if (currentGain > m_Parameters.Threshold)
 		targetFader = m_Parameters.TargetLevel - currentGain;
 
 	targetFader = std::clamp(targetFader, m_Parameters.RangeMin, m_Parameters.RangeMax);
-	m_Parameters.FaderLevel = std::lerp(m_Parameters.FaderLevel, targetFader,  1.f / m_Smoothing);
-	//m_Parameters.FaderLevel = std::lerp(m_Parameters.FaderLevel, targetFader, )
+
+	m_Smoothing.setTargetValue(targetFader);
+	m_Smoothing.skip(m_SamplesPerBlock);
+
+	m_Parameters.FaderLevel = m_Smoothing.getCurrentValue();
+
 	getParameter("FaderLevel")->setValueNotifyingHost((m_Parameters.FaderLevel + 12.f) / 24.f);
 }
 
@@ -65,7 +73,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 		-20.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("FaderLevel", "FaderLevel",
-		juce::NormalisableRange(-12.f, 12.f, 0.2f, 1.f),
+		juce::NormalisableRange(-12.f, 12.f, 0.005f, 1.f),
 		0.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("RangeMax", "RangeMax",
@@ -76,7 +84,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 		juce::NormalisableRange(-12.f, 12.f, 0.2f, 1.f),
 		-12.f));
 
-	layout.add(std::make_unique<juce::AudioParameterFloat>("VocalSensitivity", "VocalSensitivity",
+	layout.add(std::make_unique<juce::AudioParameterFloat>("Threshold", "Threshold",
 		juce::NormalisableRange(-50.f, 0.f, 0.05f, 1.f),
 		-25.f));
 
@@ -88,8 +96,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 		juce::NormalisableRange(-100.f, 100.f, 0.2f, 1.f),
 		0.f));
 
-	layout.add(std::make_unique<juce::AudioParameterFloat>("Attack", "Attack",
-		juce::NormalisableRange(0.f, 500.f, 1.f, 1.f),
+	layout.add(std::make_unique<juce::AudioParameterFloat>("Ramp", "Ramp",
+		juce::NormalisableRange(1.f, 350.f, 1.f, 1.f),
 		0.f));
 
 

@@ -96,6 +96,8 @@ void Fader_RiderAudioProcessor::changeProgramName(int /*index*/, const juce::Str
 //==============================================================================
 void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
+	m_pValueTreeState->SetSampleRate(sampleRate);
+	m_pValueTreeState->SetSamplesPerBlock(samplesPerBlock);
 	m_pValueTreeState->UpdateParameterSettings();
 	//m_pValueTreeState->SetBlockRate(static_cast<float>(sampleRate / samplesPerBlock));
 
@@ -169,8 +171,8 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
 	// Noise gate
 	const ParameterSettings params = m_pValueTreeState->GetParameterSettings();
-	m_RightChannel.get<0>().setThreshold(params.VocalSensitivity);
-	m_LeftChannel.get<0>().setThreshold(params.VocalSensitivity);
+	m_RightChannel.get<0>().setThreshold(params.Threshold);
+	m_LeftChannel.get<0>().setThreshold(params.Threshold);
 
 	UpdateGain(buffer, totalNumInputChannels);
 
@@ -254,8 +256,8 @@ void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int
 	m_LeftChannel.get<1>().setGainDecibels(leftGain);
 	m_RightChannel.get<1>().setGainDecibels(rightGain);
 
-	m_LeftChannel.get<1>().setRampDurationSeconds(params.Attack / 100);// attack is in ms
-	m_RightChannel.get<1>().setRampDurationSeconds(params.Attack / 100);
+	m_LeftChannel.get<1>().setRampDurationSeconds(params.Ramp / 1000);// attack is in ms
+	m_RightChannel.get<1>().setRampDurationSeconds(params.Ramp / 1000);
 }
 
 //==============================================================================

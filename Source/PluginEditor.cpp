@@ -22,8 +22,8 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	, m_OutputAttachment(*p.GetValueTree(), "Output", m_OutputSlider)
 	, m_FaderAttachment(*p.GetValueTree(), "FaderLevel", m_FaderLevel)
 	, m_TargetAttachment(*p.GetValueTree(), "TargetLevel", *m_pTargetLevel)
-	, m_VocalAttachment(*p.GetValueTree(), "VocalSensitivity", *m_pVocalSensitivity)
-	, m_AttackAttachment(*p.GetValueTree(), "Attack", *m_pAttackKnob)
+	, m_VocalAttachment(*p.GetValueTree(), "Threshold", *m_pVocalSensitivity)
+	, m_AttackAttachment(*p.GetValueTree(), "Ramp", *m_pAttackKnob)
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
@@ -99,16 +99,16 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 
 	m_pVocalSensitivity->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-	m_pVocalSensitivity->setValue(audioProcessor.GetValueTree()->GetParameterSettings().VocalSensitivity);
+	m_pVocalSensitivity->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Threshold);
 	m_pVocalSensitivity->SetValueName("Threshold: ");
 	m_pVocalSensitivity->setTextValueSuffix("dB");
 	m_pVocalSensitivity->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
 
 	m_pAttackKnob->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-	m_pAttackKnob->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Attack);
+	m_pAttackKnob->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Ramp);
 	m_pAttackKnob->SetValueName("Ramp: ");
 	m_pAttackKnob->setTextValueSuffix("ms");
-	m_pAttackKnob->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
+	m_pAttackKnob->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
 
 	addAndMakeVisible(m_MinMaxSlider);
 	addAndMakeVisible(m_FaderLevel);
