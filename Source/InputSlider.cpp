@@ -57,13 +57,13 @@ void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wid
 		font.setHeight(pSlider->GetTextHeight());
 		font.setBold(true);
 		g.setFont(font);
-		auto text = pSlider->GetTextStr();
-		auto textWidth = g.getCurrentFont().getStringWidth(text);
+		const auto text = pSlider->GetTextStr();
+		const auto textWidth = g.getCurrentFont().getStringWidth(text);
 
 		juce::Rectangle<int> textRect{};
-		textRect.setSize(textWidth, pSlider->GetTextHeight());
+		textRect.setSize(textWidth, static_cast<int>(pSlider->GetTextHeight()));
 		textRect.setCentre(center);
-		textRect.translate(0.f, -sliderBounds.getHeight());
+		textRect.translate(0, static_cast<int>(-sliderBounds.getHeight()));
 
 		g.setColour(juce::Colours::black);
 		g.drawFittedText(text, textRect, juce::Justification::centredTop, 1);

@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 
+class CustomLookAndFeel;
 //==============================================================================
 /*
 */
@@ -27,6 +28,7 @@ public:
 
 	virtual void paint(juce::Graphics&) override;
 	virtual void resized() override;
+	juce::String getTextFromValue(double value) override;
 
 	juce::Rectangle<float> GetSliderBounds() const;
 
@@ -35,15 +37,17 @@ public:
 	void SetTextHeight(float height) { m_TextHeight = height; }
 	void SetValueName(juce::String name) { m_ValueName = name; }
 
-	int GetTextHeight() const { return m_TextHeight; }
-	juce::String GetTextStr();
+	float GetTextHeight() const { return m_TextHeight; }
+	juce::String GetTextStr(bool min = true);
 	float GetSliderOffset() const { return m_SliderOffset; }
 	float GetThumbWidth() const { return m_ThumbWidth; }
 
 private:
+	std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;
 	juce::String m_ValueName{ "" };
 	float m_SliderOffset{ 15.f };
 	float m_ThumbWidth{ 10.f };
 	float m_TextHeight{ 15.f };
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomSlider)
 };

@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 
+class CustomSlider;
 class InputSlider;
 class TwoValueSliderAttachment;
 //==============================================================================
@@ -38,8 +39,8 @@ private:
 	juce::Slider m_OutputSlider{};
 	juce::Slider m_FaderLevel{};
 	std::unique_ptr<InputSlider> m_pTargetLevel = nullptr;
-	juce::Slider m_VocalSensitivity{};
-	juce::Slider m_AttackKnob{};
+	std::unique_ptr<CustomSlider> m_pVocalSensitivity = nullptr;
+	std::unique_ptr<CustomSlider> m_pAttackKnob = nullptr;
 
 	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
 	std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
