@@ -61,7 +61,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 	ParameterLayout layout{};
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("TargetLevel", "TargetLevel",
-		juce::NormalisableRange(-60.f, 6.f, 0.2f, 1.f),
+		juce::NormalisableRange(-60.f, 0.f, 0.02f, 1.f),
 		-20.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>("FaderLevel", "FaderLevel",

@@ -604,6 +604,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\CustomSlider.cpp">
+      <Filter>FaderRider\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
       <Filter>FaderRider\Source</Filter>
     </ClCompile>
@@ -614,6 +617,9 @@
       <Filter>FaderRider\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\InputSlider.cpp">
+      <Filter>FaderRider\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CustomLookAndFeel.cpp">
       <Filter>FaderRider\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.cpp">
@@ -3054,6 +3060,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\CustomSlider.h">
+      <Filter>FaderRider\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\3rdParty\MultiValueAttachedControlBase.h">
       <Filter>FaderRider\Source\3rdParty</Filter>
     </ClInclude>
@@ -3067,6 +3076,9 @@
       <Filter>FaderRider\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\InputSlider.h">
+      <Filter>FaderRider\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CustomLookAndFeel.h">
       <Filter>FaderRider\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">

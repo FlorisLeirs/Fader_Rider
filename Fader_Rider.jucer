@@ -5,6 +5,9 @@
               cppLanguageStandard="20" companyName="FlorisL" pluginVST3Category="Tools">
   <MAINGROUP id="DtYvQU" name="FaderRider">
     <GROUP id="{EC529A27-8A67-85CA-21F4-9D85F035CAD4}" name="Source">
+      <FILE id="O2sln5" name="CustomSlider.cpp" compile="1" resource="0"
+            file="Source/CustomSlider.cpp"/>
+      <FILE id="nLd17J" name="CustomSlider.h" compile="0" resource="0" file="Source/CustomSlider.h"/>
       <GROUP id="{3E5896B8-2619-3CA9-CC53-AD3702A8BD2B}" name="3rdParty">
         <FILE id="TSk42W" name="MultiValueAttachedControlBase.h" compile="0"
               resource="0" file="Source/3rdParty/MultiValueAttachedControlBase.h"/>
@@ -22,6 +25,10 @@
       <FILE id="fP4G4b" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="pb1eIb" name="InputSlider.cpp" compile="1" resource="0" file="Source/InputSlider.cpp"/>
       <FILE id="xt8ghN" name="InputSlider.h" compile="0" resource="0" file="Source/InputSlider.h"/>
+      <FILE id="Bof444" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/CustomLookAndFeel.cpp"/>
+      <FILE id="Ybn5pH" name="CustomLookAndFeel.h" compile="0" resource="0"
+            file="Source/CustomLookAndFeel.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

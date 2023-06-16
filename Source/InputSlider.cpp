@@ -73,7 +73,7 @@ void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wid
 
 //==============================================================================
 InputSlider::InputSlider()
-	: Slider()
+	: CustomSlider()
 {
 	setScrollWheelEnabled(true);
 	setSliderStyle(Slider::LinearHorizontal);
@@ -82,7 +82,7 @@ InputSlider::InputSlider()
 
 	m_pLookAndFeel = std::make_unique<InputLookAndFeel>();
 	setLookAndFeel(m_pLookAndFeel.get());
-	setSliderSnapsToMousePosition(false);
+	
 }
 
 InputSlider::~InputSlider()
@@ -96,7 +96,7 @@ void InputSlider::paint(juce::Graphics& g)
 	auto sliderBounds = GetSliderBounds();
 
 	const auto sliderPos = juce::jmap(getValue(), range.getStart(), range.getEnd(),
-		static_cast<double>(m_SliderOffset), static_cast<double>(sliderBounds.getWidth() + m_SliderOffset));
+		static_cast<double>(GetSliderOffset()), static_cast<double>(sliderBounds.getWidth() + GetSliderOffset()));
 
 	m_pLookAndFeel->drawLinearSlider(g, static_cast<int>(sliderBounds.getX()), static_cast<int>(sliderBounds.getY()),
 		static_cast<int>(sliderBounds.getWidth()),
@@ -112,21 +112,4 @@ void InputSlider::resized()
 	// components that your component contains..
 	
 
-}
-
-juce::Rectangle<float> InputSlider::GetSliderBounds() const
-{
-	//return getLocalBounds().toFloat();
-
-	auto bounds = getLocalBounds().toFloat();
-	bounds.removeFromTop(static_cast<float>(getTextBoxHeight()));
-	bounds.removeFromLeft(m_SliderOffset);
-	bounds.removeFromRight(m_SliderOffset);
-	bounds.removeFromBottom(m_SliderOffset);
-	return bounds;
-}
-
-juce::String InputSlider::GetTextStr()
-{
-	return juce::String("Target: " + getTextFromValue(getValue()));
 }
