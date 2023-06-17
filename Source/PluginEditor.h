@@ -35,9 +35,9 @@ private:
 
 	juce::Rectangle<int> m_TopArea{};
 
-	juce::Slider m_MinMaxSlider{};
-	juce::Slider m_OutputSlider{};
-	juce::Slider m_FaderLevel{};
+	std::unique_ptr<CustomSlider> m_pMinMaxSlider = nullptr;
+	std::unique_ptr<CustomSlider> m_pOutputSlider = nullptr;
+	std::unique_ptr<CustomSlider> m_pFaderLevel = nullptr;
 	std::unique_ptr<InputSlider> m_pTargetLevel = nullptr;
 	std::unique_ptr<CustomSlider> m_pThresholdSlider = nullptr;
 	std::unique_ptr<CustomSlider> m_pRampSlider = nullptr;

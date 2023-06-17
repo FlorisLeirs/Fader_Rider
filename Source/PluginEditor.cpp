@@ -17,11 +17,14 @@ using juce::Slider;
 //==============================================================================
 Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudioProcessor& p)
 	: AudioProcessorEditor(&p), audioProcessor(p)
+	, m_pMinMaxSlider(std::make_unique<CustomSlider>())
+	, m_pOutputSlider(std::make_unique<CustomSlider>())
+	, m_pFaderLevel(std::make_unique<CustomSlider>())
 	, m_pTargetLevel(std::make_unique<InputSlider>())
 	, m_pThresholdSlider(std::make_unique<CustomSlider>())
 	, m_pRampSlider(std::make_unique<CustomSlider>())
-	, m_OutputAttachment(*p.GetValueTree(), ParameterSettings::OutputStr, m_OutputSlider)
-	, m_FaderAttachment(*p.GetValueTree(), ParameterSettings::FaderStr, m_FaderLevel)
+	, m_OutputAttachment(*p.GetValueTree(), ParameterSettings::OutputStr, *m_pOutputSlider)
+	, m_FaderAttachment(*p.GetValueTree(), ParameterSettings::FaderStr, *m_pFaderLevel)
 	, m_TargetAttachment(*p.GetValueTree(), ParameterSettings::TargetStr, *m_pTargetLevel)
 	, m_ThresholdAttachment(*p.GetValueTree(), ParameterSettings::ThresholdStr, *m_pThresholdSlider)
 	, m_RampAttachment(*p.GetValueTree(), ParameterSettings::RampStr, *m_pRampSlider)
@@ -30,8 +33,11 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	// editor's size to whatever you need it to be.
 	setSize(400, 600);
 	InitializeSliders();
-	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), ParameterSettings::MinStr, ParameterSettings::MaxStr, m_MinMaxSlider);
+	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), ParameterSettings::MinStr,
+		ParameterSettings::MaxStr, *m_pMinMaxSlider);
 	startTimerHz(24);
+
+	setColour(juce::ResizableWindow::backgroundColourId, juce::Colours::darkslategrey);
 }
 
 Fader_RiderAudioProcessorEditor::~Fader_RiderAudioProcessorEditor()
@@ -67,9 +73,9 @@ void Fader_RiderAudioProcessorEditor::resized()
 	m_pRampSlider->setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
 	m_pThresholdSlider->setBounds(topArea.removeFromLeft(topArea.getWidth()));
 
-	m_MinMaxSlider.setBounds(bounds.removeFromLeft(bounds.getWidth() / 3));
-	m_FaderLevel.setBounds(bounds.removeFromLeft(bounds.getWidth() / 2));
-	m_OutputSlider.setBounds(bounds);
+	m_pMinMaxSlider->setBounds(bounds.removeFromLeft(bounds.getWidth() / 3));
+	m_pFaderLevel->setBounds(bounds.removeFromLeft(bounds.getWidth() / 2));
+	m_pOutputSlider->setBounds(bounds);
 
 }
 
@@ -81,21 +87,21 @@ void Fader_RiderAudioProcessorEditor::timerCallback()
 
 void Fader_RiderAudioProcessorEditor::InitializeSliders()
 {
-	m_MinMaxSlider.setSliderStyle(Slider::TwoValueVertical);
-	m_MinMaxSlider.setMinValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMin);
-	m_MinMaxSlider.setMaxValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMax);
-	m_MinMaxSlider.setTextValueSuffix("dB");
-	m_MinMaxSlider.setTextBoxStyle(Slider::TextBoxLeft, false, 50, 25);
+	m_pMinMaxSlider->setSliderStyle(Slider::TwoValueVertical);
+	m_pMinMaxSlider->setMinValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMin);
+	m_pMinMaxSlider->setMaxValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMax);
+	m_pMinMaxSlider->setTextValueSuffix("dB");
+	m_pMinMaxSlider->setTextBoxStyle(Slider::TextBoxRight, false, 50, 25);
 
-	m_FaderLevel.setSliderStyle(Slider::LinearVertical);
-	m_FaderLevel.setValue(audioProcessor.GetValueTree()->GetParameterSettings().FaderLevel);
-	m_FaderLevel.setTextValueSuffix("dB");
-	m_FaderLevel.setTextBoxStyle(Slider::TextBoxAbove, true, 50, 25);
+	m_pFaderLevel->setSliderStyle(Slider::LinearVertical);
+	m_pFaderLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().FaderLevel);
+	m_pFaderLevel->setTextValueSuffix("dB");
+	m_pFaderLevel->setTextBoxStyle(Slider::TextBoxAbove, true, 50, 25);
 
-	m_OutputSlider.setSliderStyle(Slider::LinearVertical);
-	m_OutputSlider.setValue(audioProcessor.GetValueTree()->GetParameterSettings().Output);
-	m_OutputSlider.setTextValueSuffix("dB");
-	m_OutputSlider.setTextBoxStyle(Slider::TextBoxRight, false, 150, 25);
+	m_pOutputSlider->setSliderStyle(Slider::LinearVertical);
+	m_pOutputSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Output);
+	m_pOutputSlider->setTextValueSuffix("dB");
+	m_pOutputSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
 
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 
@@ -111,9 +117,9 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pRampSlider->setTextValueSuffix("ms");
 	m_pRampSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
 
-	addAndMakeVisible(m_MinMaxSlider);
-	addAndMakeVisible(m_FaderLevel);
-	addAndMakeVisible(m_OutputSlider);
+	addAndMakeVisible(*m_pMinMaxSlider);
+	addAndMakeVisible(*m_pFaderLevel);
+	addAndMakeVisible(*m_pOutputSlider);
 	addAndMakeVisible(*m_pTargetLevel);
 	addAndMakeVisible(*m_pThresholdSlider);
 	addAndMakeVisible(*m_pRampSlider);

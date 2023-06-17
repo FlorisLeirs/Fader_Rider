@@ -40,7 +40,7 @@ public:
 	float GetTextHeight() const { return m_TextHeight; }
 	juce::String GetTextStr(bool min = true);
 	float GetSliderOffset() const { return m_SliderOffset; }
-	float GetThumbWidth() const { return m_ThumbWidth; }
+	float GetThumbWidth() const { return m_ThumbWidth; } // used as height for vertical sliders
 
 private:
 	std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;

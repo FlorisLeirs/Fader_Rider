@@ -21,7 +21,8 @@ CustomSlider::CustomSlider()
 	setSliderSnapsToMousePosition(false);
 	m_pBasicLookAndFeel = std::make_unique<CustomLookAndFeel>();
 	setLookAndFeel(m_pBasicLookAndFeel.get());
-	setColour(thumbColourId, juce::Colours::darkslategrey);
+	setColour(thumbColourId, juce::Colours::lightgrey);
+	setColour(trackColourId, juce::Colours::dimgrey);
 
 }
 
@@ -33,18 +34,48 @@ CustomSlider::~CustomSlider()
 void CustomSlider::paint(juce::Graphics& g)
 {
 	const auto sliderStyle = getSliderStyle();
+	auto bounds = GetSliderBounds().toNearestInt();
+
 	if (sliderStyle == Rotary || sliderStyle == RotaryHorizontalDrag || sliderStyle == RotaryHorizontalVerticalDrag ||
 		sliderStyle == RotaryVerticalDrag)
 	{
 		const float startAngle = juce::degreesToRadians(180.f + 60.f);
 		const float endAngle = juce::degreesToRadians(180.f - 60.f) + juce::MathConstants<float>::twoPi;
 
-		const auto bounds = GetSliderBounds().toNearestInt();
 		getLookAndFeel().drawRotarySlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),
 			static_cast<float>(valueToProportionOfLength(getValue())), startAngle, endAngle, *this);
 	}
+	else if (sliderStyle == LinearVertical)
+	{
+		const int amountToRemove = bounds.getWidth() / 3; // used to remove from right AND left
+		bounds.removeFromLeft(amountToRemove);
+		bounds.removeFromRight(amountToRemove);
 
-	if (auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label && !label->isBeingEdited())
+		const auto range = getRange();
+		const auto sliderPos = juce::jmap(getValue(), range.getStart(), range.getEnd(),
+			static_cast<double>(bounds.getBottom()), static_cast<double>(bounds.getY()));
+
+		getLookAndFeel().drawLinearSlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),
+			static_cast<float>(sliderPos),
+			0.f, 0.f, sliderStyle, *this);
+	}
+	else if (sliderStyle == TwoValueVertical)
+	{
+		const int amountToRemove = bounds.getWidth() / 3; // used to remove from right AND left
+		bounds.removeFromLeft(amountToRemove);
+		bounds.removeFromRight(amountToRemove);
+
+		const auto range = getRange();
+		const auto maxSliderPos = juce::jmap(getMaxValue(), range.getStart(), range.getEnd(),
+			static_cast<double>(bounds.getBottom()), static_cast<double>(bounds.getY()));
+		const auto minSliderPos = juce::jmap(getMinValue(), range.getStart(), range.getEnd(),
+			static_cast<double>(bounds.getBottom()), static_cast<double>(bounds.getY()));
+
+		getLookAndFeel().drawLinearSlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), 0.f,
+			static_cast<float>(minSliderPos), static_cast<float>(maxSliderPos), sliderStyle, *this);
+	}
+
+	if (const auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label && !label->isBeingEdited())
 		label->setText(GetTextStr(), juce::dontSendNotification);
 
 
