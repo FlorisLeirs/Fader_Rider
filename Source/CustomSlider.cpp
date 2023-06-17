@@ -41,7 +41,7 @@ void CustomSlider::paint(juce::Graphics& g)
 
 		const auto bounds = GetSliderBounds().toNearestInt();
 		getLookAndFeel().drawRotarySlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),
-			static_cast<float>(getValue()), startAngle, endAngle, *this);
+			static_cast<float>(valueToProportionOfLength(getValue())), startAngle, endAngle, *this);
 	}
 
 	if (auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label && !label->isBeingEdited())

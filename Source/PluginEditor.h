@@ -39,16 +39,16 @@ private:
 	juce::Slider m_OutputSlider{};
 	juce::Slider m_FaderLevel{};
 	std::unique_ptr<InputSlider> m_pTargetLevel = nullptr;
-	std::unique_ptr<CustomSlider> m_pVocalSensitivity = nullptr;
-	std::unique_ptr<CustomSlider> m_pAttackKnob = nullptr;
+	std::unique_ptr<CustomSlider> m_pThresholdSlider = nullptr;
+	std::unique_ptr<CustomSlider> m_pRampSlider = nullptr;
 
 	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
 	std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
 	Attachment m_OutputAttachment;
 	Attachment m_FaderAttachment;
 	Attachment m_TargetAttachment;
-	Attachment m_VocalAttachment;
-	Attachment m_AttackAttachment;
+	Attachment m_ThresholdAttachment;
+	Attachment m_RampAttachment;
 
 
 	void InitializeSliders();

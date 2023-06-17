@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "FaderValueTree.h"
 #include "3rdParty/MultiValueAttachedControlBase.h"
 #include "InputSlider.h"
 
@@ -17,19 +18,19 @@ using juce::Slider;
 Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudioProcessor& p)
 	: AudioProcessorEditor(&p), audioProcessor(p)
 	, m_pTargetLevel(std::make_unique<InputSlider>())
-	, m_pVocalSensitivity(std::make_unique<CustomSlider>())
-	, m_pAttackKnob(std::make_unique<CustomSlider>())
-	, m_OutputAttachment(*p.GetValueTree(), "Output", m_OutputSlider)
-	, m_FaderAttachment(*p.GetValueTree(), "FaderLevel", m_FaderLevel)
-	, m_TargetAttachment(*p.GetValueTree(), "TargetLevel", *m_pTargetLevel)
-	, m_VocalAttachment(*p.GetValueTree(), "Threshold", *m_pVocalSensitivity)
-	, m_AttackAttachment(*p.GetValueTree(), "Ramp", *m_pAttackKnob)
+	, m_pThresholdSlider(std::make_unique<CustomSlider>())
+	, m_pRampSlider(std::make_unique<CustomSlider>())
+	, m_OutputAttachment(*p.GetValueTree(), ParameterSettings::OutputStr, m_OutputSlider)
+	, m_FaderAttachment(*p.GetValueTree(), ParameterSettings::FaderStr, m_FaderLevel)
+	, m_TargetAttachment(*p.GetValueTree(), ParameterSettings::TargetStr, *m_pTargetLevel)
+	, m_ThresholdAttachment(*p.GetValueTree(), ParameterSettings::ThresholdStr, *m_pThresholdSlider)
+	, m_RampAttachment(*p.GetValueTree(), ParameterSettings::RampStr, *m_pRampSlider)
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
 	setSize(400, 600);
 	InitializeSliders();
-	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), "RangeMin", "RangeMax", m_MinMaxSlider);
+	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), ParameterSettings::MinStr, ParameterSettings::MaxStr, m_MinMaxSlider);
 	startTimerHz(24);
 }
 
@@ -63,8 +64,8 @@ void Fader_RiderAudioProcessorEditor::resized()
 	m_TopArea = topArea;
 
 	m_pTargetLevel->setBounds(topArea.removeFromTop(topArea.getHeight() / 3));
-	m_pAttackKnob->setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
-	m_pVocalSensitivity->setBounds(topArea.removeFromLeft(topArea.getWidth()));
+	m_pRampSlider->setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
+	m_pThresholdSlider->setBounds(topArea.removeFromLeft(topArea.getWidth()));
 
 	m_MinMaxSlider.setBounds(bounds.removeFromLeft(bounds.getWidth() / 3));
 	m_FaderLevel.setBounds(bounds.removeFromLeft(bounds.getWidth() / 2));
@@ -98,22 +99,22 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 
-	m_pVocalSensitivity->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-	m_pVocalSensitivity->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Threshold);
-	m_pVocalSensitivity->SetValueName("Threshold: ");
-	m_pVocalSensitivity->setTextValueSuffix("dB");
-	m_pVocalSensitivity->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
+	m_pThresholdSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+	m_pThresholdSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Threshold);
+	m_pThresholdSlider->SetValueName("Threshold: ");
+	m_pThresholdSlider->setTextValueSuffix("dB");
+	m_pThresholdSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
 
-	m_pAttackKnob->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
-	m_pAttackKnob->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Ramp);
-	m_pAttackKnob->SetValueName("Ramp: ");
-	m_pAttackKnob->setTextValueSuffix("ms");
-	m_pAttackKnob->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
+	m_pRampSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
+	m_pRampSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Ramp);
+	m_pRampSlider->SetValueName("Ramp: ");
+	m_pRampSlider->setTextValueSuffix("ms");
+	m_pRampSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
 
 	addAndMakeVisible(m_MinMaxSlider);
 	addAndMakeVisible(m_FaderLevel);
 	addAndMakeVisible(m_OutputSlider);
 	addAndMakeVisible(*m_pTargetLevel);
-	addAndMakeVisible(*m_pVocalSensitivity);
-	addAndMakeVisible(*m_pAttackKnob);
+	addAndMakeVisible(*m_pThresholdSlider);
+	addAndMakeVisible(*m_pRampSlider);
 }

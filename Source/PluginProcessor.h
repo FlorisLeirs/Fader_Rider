@@ -10,8 +10,6 @@
 
 #include <JuceHeader.h>
 
-#include "FaderValueTree.h"
-
 
 class FaderValueTree;
 //==============================================================================

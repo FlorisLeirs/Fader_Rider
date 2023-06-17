@@ -40,8 +40,7 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 	g.setColour(slider.findColour(juce::Slider::rotarySliderFillColourId));
 	g.drawEllipse(circleBounds.toFloat(), 1.f);
 
-	const auto range = slider.getRange();
-	const auto angle = juce::jmap(sliderPosProportional, static_cast<float>(range.getStart()), static_cast<float>(range.getEnd()), rotaryStartAngle, rotaryEndAngle);
+	const auto angle = juce::jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
 
 	const auto thumbOffset = juce::jmin(8.0f, size * 0.5f);
 	const auto arcRadius = size / 2 - thumbOffset * 2;
