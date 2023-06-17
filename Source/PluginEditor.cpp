@@ -91,31 +91,36 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pMinMaxSlider->setMinValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMin);
 	m_pMinMaxSlider->setMaxValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMax);
 	m_pMinMaxSlider->setTextValueSuffix("dB");
+	m_pMinMaxSlider->SetValueName("Range");
 	m_pMinMaxSlider->setTextBoxStyle(Slider::NoTextBox, false, 50, 25);
 
 	m_pFaderLevel->setSliderStyle(Slider::LinearVertical);
 	m_pFaderLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().FaderLevel);
+	m_pFaderLevel->SetValueName("Fader");
 	m_pFaderLevel->setTextValueSuffix("dB");
 	m_pFaderLevel->setTextBoxStyle(Slider::TextBoxAbove, true, 50, 25);
 
 	m_pOutputSlider->setSliderStyle(Slider::LinearVertical);
 	m_pOutputSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Output);
+	m_pOutputSlider->SetValueName("Output");
 	m_pOutputSlider->setTextValueSuffix("dB");
 	m_pOutputSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
 
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
+	m_pTargetLevel->SetValueName("Target");
+	m_pTargetLevel->setTextBoxStyle(Slider::TextBoxAbove, false, 60, 30);
 
 	m_pThresholdSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	m_pThresholdSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Threshold);
-	m_pThresholdSlider->SetValueName("Threshold: ");
+	m_pThresholdSlider->SetValueName("Threshold ");
 	m_pThresholdSlider->setTextValueSuffix("dB");
-	m_pThresholdSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
+	m_pThresholdSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
 
 	m_pRampSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	m_pRampSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Ramp);
-	m_pRampSlider->SetValueName("Ramp: ");
+	m_pRampSlider->SetValueName("Ramp");
 	m_pRampSlider->setTextValueSuffix("ms");
-	m_pRampSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 150, 25);
+	m_pRampSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
 
 	addAndMakeVisible(*m_pMinMaxSlider);
 	addAndMakeVisible(*m_pFaderLevel);

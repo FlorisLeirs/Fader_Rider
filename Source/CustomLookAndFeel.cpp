@@ -80,21 +80,34 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 	const auto thumbWidth = thumbOffset * 2.f;
 
 	g.fillEllipse(juce::Rectangle<float>(thumbWidth, thumbWidth).withCentre(thumbPoint));
+
+	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
+	{
+		juce::Font font{};
+		font.setHeight(pSlider->GetTextHeight());
+		g.setFont(font);
+		const auto text = pSlider->GetName();
+		auto textWidth = g.getCurrentFont().getStringWidth(text);
+
+		g.setColour(juce::Colours::black);
+		g.drawFittedText(text, circleBounds.getCentreX() - textWidth / 2, y - slider.getTextBoxHeight(), textWidth,
+		                 static_cast<int>(font.getHeight()), juce::Justification::centred, 1);
+	}
 }
 
 void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<int> sliderRect, float minSliderPos,
 	float maxSliderPos, juce::Slider& slider)
 {
 	sliderRect.translate(-20.f, 0.f);
-	auto width = static_cast<float>(sliderRect.getWidth());
-	auto x = static_cast<float>(sliderRect.getX());
+	const auto width = static_cast<float>(sliderRect.getWidth());
+	const auto x = static_cast<float>(sliderRect.getX());
 	g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
 
 	g.fillRoundedRectangle(sliderRect.toFloat(), width / 4.f);
 
 	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
 	{
-		
+
 
 		//Range-----------------
 		const auto rangeRect = juce::Rectangle{ x, maxSliderPos,
@@ -116,7 +129,7 @@ void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<in
 		};
 
 		const auto minThumbRect = juce::Rectangle{
-			static_cast<float>(x + sliderRect.getWidth()), minSliderPos - thumbHeight / 2,
+			x + width, minSliderPos - thumbHeight / 2,
 			diameter, diameter
 		};
 
@@ -133,13 +146,21 @@ void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<in
 		const auto minText = pSlider->GetTextStr();
 		auto textWidth = g.getCurrentFont().getStringWidth(minText);
 
-		g.drawFittedText(minText, minThumbRect.getRight(), minThumbRect.getY(), textWidth, font.getHeight(),
+		g.drawFittedText(minText, static_cast<int>(minThumbRect.getRight()), static_cast<int>(minThumbRect.getY()),
+			textWidth, static_cast<int>(font.getHeight()),
 			juce::Justification::centred, 1);
 
 		const auto maxText = pSlider->GetTextStr(false);
 		textWidth = g.getCurrentFont().getStringWidth(maxText);
 
-		g.drawFittedText(maxText, minThumbRect.getRight(), maxThumbRect.getY(), textWidth, font.getHeight(),
+		g.drawFittedText(maxText, static_cast<int>(minThumbRect.getRight()), static_cast<int>(maxThumbRect.getY()),
+			textWidth, static_cast<int>(font.getHeight()),
+			juce::Justification::centred, 1);
+
+		const auto name = pSlider->GetName();
+		textWidth = g.getCurrentFont().getStringWidth(name);
+
+		g.drawFittedText(name, sliderRect.getX(), 2.f, textWidth, static_cast<int>(font.getHeight()),
 			juce::Justification::centred, 1);
 	}
 }

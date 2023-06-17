@@ -46,6 +46,7 @@ public:
 
 	void paint(juce::Graphics&) override;
 	void resized() override;
+	juce::Rectangle<float> GetSliderBounds() const override;
 
 	void SetInputLevel(float inputLevel) { m_InputLevel = inputLevel; }
 

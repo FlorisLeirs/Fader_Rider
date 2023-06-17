@@ -33,41 +33,40 @@ void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wid
 		g.setColour(juce::Colours::lightgrey);
 		g.fillRect(sliderBounds);
 
-		g.setColour(juce::Colours::goldenrod);
 		const auto levelX = juce::jmap(static_cast<double>(pSlider->GetInputLevel()), range.getStart(), range.getEnd(),
-		                               static_cast<double>(pSlider->GetSliderOffset()),
-		                               static_cast<double>(sliderBounds.getWidth() + pSlider->GetSliderOffset()));
+			static_cast<double>(pSlider->GetSliderOffset()),
+			static_cast<double>(sliderBounds.getWidth() + pSlider->GetSliderOffset()));
 
 		auto center = sliderBounds.getCentre().toInt();
 
 		sliderBounds.removeFromRight(sliderBounds.getWidth() - static_cast<float>(levelX));
 
-
+		g.setColour(juce::Colours::goldenrod);
 		g.fillRect(sliderBounds);
 
-		g.setColour(juce::Colours::white);
 		auto thumbWidth = pSlider->GetThumbWidth();
 		auto thumbRect = juce::Rectangle<float>{
 			sliderPos - thumbWidth / 2.f, sliderBounds.getY(), thumbWidth, sliderBounds.getHeight()
 		};
 
+		g.setColour(juce::Colours::white);
 		g.fillRoundedRectangle(thumbRect, 2.f);
 
 		juce::Font font{};
 		font.setHeight(pSlider->GetTextHeight());
 		font.setBold(true);
 		g.setFont(font);
-		const auto text = pSlider->GetTextStr();
+		const auto text = pSlider->GetName();
 		const auto textWidth = g.getCurrentFont().getStringWidth(text);
 
 		juce::Rectangle<int> textRect{};
 		textRect.setSize(textWidth, static_cast<int>(pSlider->GetTextHeight()));
 		textRect.setCentre(center);
-		textRect.translate(0, static_cast<int>(-sliderBounds.getHeight()));
+		textRect.setY(0);
+		textRect.translate(-slider.getTextBoxWidth() / 2 - textWidth,0);
 
 		g.setColour(juce::Colours::black);
-		g.drawFittedText(text, textRect, juce::Justification::centredTop, 1);
-
+		g.drawFittedText(text, textRect, juce::Justification::centred, 1);
 	}
 }
 
@@ -82,7 +81,7 @@ InputSlider::InputSlider()
 
 	m_pLookAndFeel = std::make_unique<InputLookAndFeel>();
 	setLookAndFeel(m_pLookAndFeel.get());
-	
+
 }
 
 InputSlider::~InputSlider()
@@ -110,6 +109,18 @@ void InputSlider::resized()
 {
 	// This method is where you should set the bounds of any child
 	// components that your component contains..
-	
+	CustomSlider::resized();
 
+}
+
+juce::Rectangle<float> InputSlider::GetSliderBounds() const
+{
+	auto bounds = getLocalBounds().toFloat();
+
+	bounds.removeFromTop(static_cast<float>(getTextBoxHeight()));
+	bounds.removeFromLeft(GetOffset());
+	bounds.removeFromRight(GetOffset());
+	bounds.removeFromBottom(GetOffset());
+
+	return bounds;
 }

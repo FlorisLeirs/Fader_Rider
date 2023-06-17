@@ -28,9 +28,8 @@ public:
 
 	virtual void paint(juce::Graphics&) override;
 	virtual void resized() override;
-	juce::String getTextFromValue(double value) override;
 
-	juce::Rectangle<float> GetSliderBounds() const;
+	virtual juce::Rectangle<float> GetSliderBounds() const;
 
 	void SetSliderOffset(float offset) { m_SliderOffset = offset; }
 	void SetThumbWidth(float width) { m_ThumbWidth = width; }
@@ -39,12 +38,13 @@ public:
 
 	float GetTextHeight() const { return m_TextHeight; }
 	juce::String GetTextStr(bool min = true);
+	const juce::String& GetName() const { return m_ValueName; }
 	float GetSliderOffset() const { return m_SliderOffset; }
 	float GetThumbWidth() const { return m_ThumbWidth; } // used as height for vertical sliders
+	float GetOffset() const { return m_SliderOffset; }
 
 private:
 	std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;
-	juce::Label m_MaxLabel{};
 	juce::String m_ValueName{ "" };
 	float m_SliderOffset{ 15.f };
 	float m_ThumbWidth{ 10.f };
