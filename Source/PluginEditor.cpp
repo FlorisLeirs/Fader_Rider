@@ -91,7 +91,7 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pMinMaxSlider->setMinValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMin);
 	m_pMinMaxSlider->setMaxValue(audioProcessor.GetValueTree()->GetParameterSettings().RangeMax);
 	m_pMinMaxSlider->setTextValueSuffix("dB");
-	m_pMinMaxSlider->setTextBoxStyle(Slider::TextBoxRight, false, 50, 25);
+	m_pMinMaxSlider->setTextBoxStyle(Slider::NoTextBox, false, 50, 25);
 
 	m_pFaderLevel->setSliderStyle(Slider::LinearVertical);
 	m_pFaderLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().FaderLevel);

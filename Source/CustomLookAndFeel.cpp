@@ -27,52 +27,29 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wi
 	float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle sliderStyle, juce::Slider& slider)
 {
 	const auto sliderRect = juce::Rectangle{ x, y, width, height };
-	g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
 
-	g.fillRoundedRectangle(sliderRect.toFloat(), static_cast<float>(width) / 4.f);
-
-	g.setColour(slider.findColour(juce::Slider::thumbColourId));
-	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
+	if (sliderStyle == juce::Slider::TwoValueVertical)
 	{
-		const auto thumbHeight = pSlider->GetThumbWidth();
+		DrawTwoValueSlider(g, sliderRect, minSliderPos, maxSliderPos, slider);
+	}
+	else
+	{
+		g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
 
-		if (sliderStyle == juce::Slider::LinearVertical)
+		g.fillRoundedRectangle(sliderRect.toFloat(), static_cast<float>(width) / 4.f);
+		if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
 		{
-			auto thumbRect = juce::Rectangle{ static_cast<float>(x), sliderPos - thumbHeight / 2,
-		static_cast<float>(sliderRect.getWidth()),thumbHeight
-			};
+			g.setColour(slider.findColour(juce::Slider::thumbColourId));
+			const auto thumbHeight = pSlider->GetThumbWidth();
 
-			g.fillRoundedRectangle(thumbRect, thumbHeight / 4.f);
-		}
-		else if (sliderStyle == juce::Slider::TwoValueVertical)
-		{
-			//Range
-			const auto rangeRect = juce::Rectangle{ static_cast<float>(x), maxSliderPos,
-				static_cast<float>(width), minSliderPos - maxSliderPos
-			};
+			if (sliderStyle == juce::Slider::LinearVertical)
+			{
+				const auto thumbRect = juce::Rectangle{ static_cast<float>(x), sliderPos - thumbHeight / 2,
+														static_cast<float>(sliderRect.getWidth()),thumbHeight
+				};
 
-			g.setColour(slider.findColour (juce::Slider::trackColourId));
-			g.fillRoundedRectangle(rangeRect, static_cast<float>(width) / 4.f);
-
-			//Thumbs
-			const auto maxThumbRect = juce::Rectangle{
-				static_cast<float>(x + sliderRect.getWidth()), maxSliderPos - thumbHeight / 2,
-				static_cast<float>(sliderRect.getWidth()), thumbHeight
-			};
-
-			const auto minThumbRect = juce::Rectangle{
-				static_cast<float>(x + sliderRect.getWidth()), minSliderPos - thumbHeight / 2,
-				static_cast<float>(sliderRect.getWidth()), thumbHeight
-			};
-
-			const float diameter = thumbHeight;
-
-			drawPointer(g, static_cast<float>(x) - diameter, maxSliderPos - thumbHeight / 2,
-				diameter, slider.findColour(juce::Slider::thumbColourId), 1);
-
-			drawPointer(g, static_cast<float>(x + sliderRect.getWidth()), minSliderPos - thumbHeight / 2,
-				diameter, slider.findColour(juce::Slider::thumbColourId), 3);
-
+				g.fillRoundedRectangle(thumbRect, thumbHeight / 4.f);
+			}
 		}
 	}
 }
@@ -103,6 +80,68 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 	const auto thumbWidth = thumbOffset * 2.f;
 
 	g.fillEllipse(juce::Rectangle<float>(thumbWidth, thumbWidth).withCentre(thumbPoint));
+}
+
+void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<int> sliderRect, float minSliderPos,
+	float maxSliderPos, juce::Slider& slider)
+{
+	sliderRect.translate(-20.f, 0.f);
+	auto width = static_cast<float>(sliderRect.getWidth());
+	auto x = static_cast<float>(sliderRect.getX());
+	g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
+
+	g.fillRoundedRectangle(sliderRect.toFloat(), width / 4.f);
+
+	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
+	{
+		
+
+		//Range-----------------
+		const auto rangeRect = juce::Rectangle{ x, maxSliderPos,
+			width, minSliderPos - maxSliderPos
+		};
+
+		g.setColour(slider.findColour(juce::Slider::trackColourId));
+		g.fillRoundedRectangle(rangeRect, width / 4.f);
+
+		//Thumbs-------------
+		g.setColour(slider.findColour(juce::Slider::thumbColourId));
+
+		const auto thumbHeight = pSlider->GetThumbWidth();
+		const float diameter = thumbHeight;
+
+		const auto maxThumbRect = juce::Rectangle{
+			static_cast<float>(x) - diameter, maxSliderPos - thumbHeight / 2,
+			diameter, diameter
+		};
+
+		const auto minThumbRect = juce::Rectangle{
+			static_cast<float>(x + sliderRect.getWidth()), minSliderPos - thumbHeight / 2,
+			diameter, diameter
+		};
+
+		drawPointer(g, maxThumbRect.getX(), maxThumbRect.getY(),
+			diameter, slider.findColour(juce::Slider::thumbColourId), 1);
+
+		drawPointer(g, minThumbRect.getX(), minThumbRect.getY(),
+			diameter, slider.findColour(juce::Slider::thumbColourId), 3);
+
+		//Text-----------------
+		juce::Font font{};
+		font.setHeight(pSlider->GetTextHeight());
+		g.setFont(font);
+		const auto minText = pSlider->GetTextStr();
+		auto textWidth = g.getCurrentFont().getStringWidth(minText);
+
+		g.drawFittedText(minText, minThumbRect.getRight(), minThumbRect.getY(), textWidth, font.getHeight(),
+			juce::Justification::centred, 1);
+
+		const auto maxText = pSlider->GetTextStr(false);
+		textWidth = g.getCurrentFont().getStringWidth(maxText);
+
+		g.drawFittedText(maxText, minThumbRect.getRight(), maxThumbRect.getY(), textWidth, font.getHeight(),
+			juce::Justification::centred, 1);
+	}
 }
 
 

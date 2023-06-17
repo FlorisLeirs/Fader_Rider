@@ -44,6 +44,7 @@ public:
 
 private:
 	std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;
+	juce::Label m_MaxLabel{};
 	juce::String m_ValueName{ "" };
 	float m_SliderOffset{ 15.f };
 	float m_ThumbWidth{ 10.f };

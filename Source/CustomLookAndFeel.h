@@ -25,5 +25,6 @@ public:
 	void drawRotarySlider(juce::Graphics&, int x, int y, int width, int height, float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider&) override;
 
 private:
+	void DrawTwoValueSlider(juce::Graphics&, juce::Rectangle<int> sliderRect, float minSliderPos, float maxSliderPos, juce::Slider&);
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };

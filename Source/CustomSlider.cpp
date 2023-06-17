@@ -78,7 +78,7 @@ void CustomSlider::paint(juce::Graphics& g)
 	if (const auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label && !label->isBeingEdited())
 		label->setText(GetTextStr(), juce::dontSendNotification);
 
-
+	m_MaxLabel.paintEntireComponent(g, false);
 }
 
 void CustomSlider::resized()
