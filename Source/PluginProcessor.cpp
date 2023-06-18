@@ -27,10 +27,6 @@ Fader_RiderAudioProcessor::Fader_RiderAudioProcessor()
 	m_pValueTreeState = std::make_unique<FaderValueTree>(*this);
 }
 
-Fader_RiderAudioProcessor::~Fader_RiderAudioProcessor()
-{
-}
-
 //==============================================================================
 const juce::String Fader_RiderAudioProcessor::getName() const
 {
@@ -96,13 +92,13 @@ void Fader_RiderAudioProcessor::changeProgramName(int /*index*/, const juce::Str
 //==============================================================================
 void Fader_RiderAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
+	//APVTS
 	m_pValueTreeState->SetSampleRate(static_cast<int>(sampleRate));
 	m_pValueTreeState->SetSamplesPerBlock(samplesPerBlock);
 	m_pValueTreeState->UpdateParameterSettings();
-	//m_pValueTreeState->SetBlockRate(static_cast<float>(sampleRate / samplesPerBlock));
 
+	//Processors
 	juce::dsp::ProcessSpec spec{};
-
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.sampleRate = sampleRate;
 	spec.numChannels = 1;
@@ -191,17 +187,16 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 	m_LeftChannel.process(leftContext);
 	m_RightChannel.process(rightContext);
 
-	// Output
-	float output = juce::Decibels::decibelsToGain(params.Output);
+	// Add Output
+	const float output = juce::Decibels::decibelsToGain(params.Output);
 
-	for(int channel{0}; channel != buffer.getNumChannels(); ++channel)
+	for (int channel{ 0 }; channel != buffer.getNumChannels(); ++channel)
 	{
-		auto pBuffer = buffer.getWritePointer(channel);
-		for(int sampleIdx{0}; sampleIdx != buffer.getNumSamples(); ++sampleIdx)
+		const auto pBuffer = buffer.getWritePointer(channel);
+
+		for (int sampleIdx{ 0 }; sampleIdx != buffer.getNumSamples(); ++sampleIdx)
 			pBuffer[sampleIdx] *= output;
 	}
-		
-
 }
 
 //==============================================================================
@@ -213,7 +208,6 @@ bool Fader_RiderAudioProcessor::hasEditor() const
 juce::AudioProcessorEditor* Fader_RiderAudioProcessor::createEditor()
 {
 	return new Fader_RiderAudioProcessorEditor(*this);
-	//return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -232,7 +226,7 @@ void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeIn
 	// You should use this method to restore your parameters from this memory block,
 	// whose contents will have been created by the getStateInformation() call.
 
-	auto newTree = juce::ValueTree::readFromData(data, sizeInBytes);
+	const auto newTree = juce::ValueTree::readFromData(data, sizeInBytes);
 	if (newTree.isValid())
 	{
 		m_pValueTreeState->replaceState(newTree);
@@ -241,8 +235,9 @@ void Fader_RiderAudioProcessor::setStateInformation(const void* data, int sizeIn
 
 }
 
-void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int numInputChannels)
+void Fader_RiderAudioProcessor::UpdateGain(const juce::AudioBuffer<float>& buffer, int numInputChannels)
 {
+	//Calculate RMS
 	float averageGain{ 0.f };
 	for (int channel = 0; channel < numInputChannels; ++channel)
 	{
@@ -250,10 +245,9 @@ void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int
 		averageGain += juce::Decibels::gainToDecibels(level);
 	}
 	averageGain /= numInputChannels;
-	m_RMS = averageGain;
 
 	if (averageGain > m_RMS.getCurrentValue())
-		m_RMS.setCurrentAndTargetValue(averageGain);
+		m_RMS.setCurrentAndTargetValue(averageGain); // don't smooth if volume increases
 	else
 		m_RMS.setTargetValue(averageGain);
 
@@ -261,8 +255,9 @@ void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int
 
 	m_pValueTreeState->SetGainLevel(m_RMS.getCurrentValue());
 
+	//Add fader level
 	const ParameterSettings params = m_pValueTreeState->GetParameterSettings();
-
+	
 	auto leftGain = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
 	auto rightGain = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
 
@@ -272,8 +267,9 @@ void Fader_RiderAudioProcessor::UpdateGain(juce::AudioBuffer<float>& buffer, int
 	m_LeftChannel.get<1>().setGainDecibels(leftGain);
 	m_RightChannel.get<1>().setGainDecibels(rightGain);
 
-	m_LeftChannel.get<1>().setRampDurationSeconds(params.Ramp / 1000);// attack is in ms
-	m_RightChannel.get<1>().setRampDurationSeconds(params.Ramp / 1000);
+	//Smooth transition
+	//m_LeftChannel.get<1>().setRampDurationSeconds(params.Ramp / 1000.f);
+	//m_RightChannel.get<1>().setRampDurationSeconds(params.Ramp / 1000.f);
 }
 
 //==============================================================================

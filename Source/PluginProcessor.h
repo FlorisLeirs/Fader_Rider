@@ -23,7 +23,7 @@ class Fader_RiderAudioProcessor : public juce::AudioProcessor
 public:
 	//==============================================================================
 	Fader_RiderAudioProcessor();
-	~Fader_RiderAudioProcessor() override;
+	~Fader_RiderAudioProcessor() override = default;
 
 	//==============================================================================
 	void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -70,7 +70,7 @@ private:
 	juce::LinearSmoothedValue<float> m_RMS{};
 	LevelAdjuster m_LeftChannel, m_RightChannel;
 
-	void UpdateGain(juce::AudioBuffer<float>& buffer, int numInputChannels);
+	void UpdateGain(const juce::AudioBuffer<float>& buffer, int numInputChannels);
 
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fader_RiderAudioProcessor)

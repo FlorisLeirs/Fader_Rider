@@ -41,34 +41,42 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 {
 	ParameterLayout layout{};
 
+	//Target
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::TargetStr, ParameterSettings::TargetStr,
 		juce::NormalisableRange(-60.f, 0.f, 0.02f),
 		-20.f));
 
+	//Fader
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::FaderStr, ParameterSettings::FaderStr,
 		juce::NormalisableRange(-12.f, 12.f, 0.005f),
 		0.f));
 
+	//Max
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::MaxStr, ParameterSettings::MaxStr,
 		juce::NormalisableRange(-12.f, 12.f, 0.2f),
 		6.f));
 
+	//Min
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::MinStr, ParameterSettings::MinStr,
 		juce::NormalisableRange(-12.f, 12.f, 0.2f),
 		-6.f));
 
+	//Threshold
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::ThresholdStr, ParameterSettings::ThresholdStr,
 		juce::NormalisableRange(juce::Decibels::gainToDecibels(0.f), 0.f, 0.1f, 2.f),
 		-100.f));
 
+	//Output
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::OutputStr, ParameterSettings::OutputStr,
 		juce::NormalisableRange(-100.f, 100.f, 0.2f, 0.5f, true),
 		0.f));
 
+	//Ramp
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::RampStr, ParameterSettings::RampStr,
 		juce::NormalisableRange(1.f, 350.f, 1.f, 1.f),
 		100.f));
 
+	//Bypass
 	layout.add(std::make_unique<juce::AudioParameterBool>(ParameterSettings::NoiseGateByPassStr,
 		ParameterSettings::NoiseGateByPassStr, false));
 

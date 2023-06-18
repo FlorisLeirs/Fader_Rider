@@ -16,19 +16,17 @@
 class InputLookAndFeel final : public juce::LookAndFeel_V4
 {
 public:
-	InputLookAndFeel();
-	~InputLookAndFeel() override;
+	InputLookAndFeel() = default;
+	~InputLookAndFeel() override = default;
+	InputLookAndFeel(InputLookAndFeel& other) = delete;
+	InputLookAndFeel(InputLookAndFeel&& other) = delete;
+	InputLookAndFeel& operator=(InputLookAndFeel& other) = delete;
+	InputLookAndFeel& operator=(InputLookAndFeel&& other) = delete;
 
-	void drawLinearSlider(juce::Graphics&,
-		int x, int y, int width, int height,
-		float sliderPos,
-		float minSliderPos,
-		float maxSliderPos,
-		const juce::Slider::SliderStyle,
+	void drawLinearSlider(juce::Graphics&, int x, int y, int width, int height,
+		float sliderPos, float minSliderPos, float maxSliderPos,
+		juce::Slider::SliderStyle,
 		juce::Slider&) override;
-
-private:
-
 };
 
 //==============================================================================
@@ -55,7 +53,6 @@ public:
 private:
 	std::unique_ptr<InputLookAndFeel> m_pLookAndFeel = nullptr;
 	float m_InputLevel{ -15.f };
-
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(InputSlider)
 };

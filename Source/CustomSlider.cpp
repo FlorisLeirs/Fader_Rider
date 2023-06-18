@@ -11,8 +11,6 @@
 #include <JuceHeader.h>
 #include "CustomSlider.h"
 
-#include "CustomLookAndFeel.h"
-
 //==============================================================================
 CustomSlider::CustomSlider(bool readOnly)
 	: m_ReadOnly(readOnly)
@@ -20,7 +18,6 @@ CustomSlider::CustomSlider(bool readOnly)
 	setSliderSnapsToMousePosition(false);
 	setColour(thumbColourId, juce::Colours::lightgrey);
 	setColour(trackColourId, juce::Colours::dimgrey);
-
 }
 
 CustomSlider::~CustomSlider()

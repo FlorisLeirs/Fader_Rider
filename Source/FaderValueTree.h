@@ -33,6 +33,7 @@ public:
 	void SetSamplesPerBlock(int samplesPerBlock) { m_SamplesPerBlock = samplesPerBlock; }
 
 	ParameterSettings GetParameterSettings() const { return m_Parameters; }
+
 private:
 	ParameterSettings m_Parameters{};
 	juce::SmoothedValue<float> m_Smoothing{0.f};

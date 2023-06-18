@@ -40,7 +40,6 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), ParameterSettings::MinStr,
 		ParameterSettings::MaxStr, *m_pMinMaxSlider);
 	startTimerHz(24);
-
 	setColour(juce::ResizableWindow::backgroundColourId, juce::Colours::darkslategrey);
 }
 
@@ -62,9 +61,6 @@ void Fader_RiderAudioProcessorEditor::paint(juce::Graphics& g)
 
 void Fader_RiderAudioProcessorEditor::resized()
 {
-	// This is generally where you'll want to lay out the positions of any
-	// subcomponents in your editor..
-
 	auto bounds = getLocalBounds();
 	auto topArea = bounds.removeFromTop(static_cast<int>(bounds.toFloat().getHeight() / 2.75f));
 	m_TopArea = topArea;
@@ -79,7 +75,6 @@ void Fader_RiderAudioProcessorEditor::resized()
 	m_pMinMaxSlider->setBounds(bounds.removeFromLeft(bounds.getWidth() / 3));
 	m_pFaderLevel->setBounds(bounds.removeFromLeft(bounds.getWidth() / 2));
 	m_pOutputSlider->setBounds(bounds);
-
 }
 
 void Fader_RiderAudioProcessorEditor::timerCallback()

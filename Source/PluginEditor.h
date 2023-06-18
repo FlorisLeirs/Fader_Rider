@@ -26,14 +26,13 @@ public:
 	//==============================================================================
 	void paint(juce::Graphics&) override;
 	void resized() override;
-
-	void timerCallback() override;
+	void timerCallback() override; // Used to get RMS
 
 private:
-	// This reference is provided as a quick way for your editor to
-	// access the processor object that created it.
-	Fader_RiderAudioProcessor& audioProcessor;
+	using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+	using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
+	Fader_RiderAudioProcessor& audioProcessor;
 	juce::Rectangle<int> m_TopArea{};
 
 	std::unique_ptr<CustomLookAndFeel> m_pLookAndFeel = nullptr;
@@ -45,9 +44,6 @@ private:
 	std::unique_ptr<CustomSlider> m_pThresholdSlider = nullptr;
 	std::unique_ptr<CustomSlider> m_pRampSlider = nullptr;
 	juce::ToggleButton m_Bypass;
-
-	using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-	using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
 	std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
 	SliderAttachment m_OutputAttachment;
