@@ -19,7 +19,7 @@ class CustomLookAndFeel;
 class CustomSlider : public juce::Slider
 {
 public:
-	CustomSlider();
+	CustomSlider(bool readOnly = false);
 	virtual ~CustomSlider() override;
 	CustomSlider(CustomSlider& other) = delete;
 	CustomSlider(CustomSlider&& other) = delete;
@@ -43,12 +43,15 @@ public:
 	float GetThumbWidth() const { return m_ThumbWidth; } // used as height for vertical sliders
 	float GetOffset() const { return m_SliderOffset; }
 
+protected:
+	void mouseDrag(const juce::MouseEvent& event) override;
+	
 private:
-	//std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;
 	juce::String m_ValueName{ "" };
 	float m_SliderOffset{ 15.f };
 	float m_ThumbWidth{ 10.f };
 	float m_TextHeight{ 15.f };
+	bool m_ReadOnly;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomSlider)
 };

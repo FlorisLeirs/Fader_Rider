@@ -21,7 +21,7 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	, m_pLookAndFeel(std::make_unique<CustomLookAndFeel>())
 	, m_pMinMaxSlider(std::make_unique<CustomSlider>())
 	, m_pOutputSlider(std::make_unique<CustomSlider>())
-	, m_pFaderLevel(std::make_unique<CustomSlider>())
+	, m_pFaderLevel(std::make_unique<CustomSlider>(true))
 	, m_pTargetLevel(std::make_unique<InputSlider>())
 	, m_pThresholdSlider(std::make_unique<CustomSlider>())
 	, m_pRampSlider(std::make_unique<CustomSlider>())

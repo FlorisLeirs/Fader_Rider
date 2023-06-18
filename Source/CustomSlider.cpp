@@ -14,13 +14,10 @@
 #include "CustomLookAndFeel.h"
 
 //==============================================================================
-CustomSlider::CustomSlider()
+CustomSlider::CustomSlider(bool readOnly)
+	: m_ReadOnly(readOnly)
 {
-	// In your constructor, you should add any child components, and
-	// initialise any special settings that your component needs.
 	setSliderSnapsToMousePosition(false);
-	//m_pBasicLookAndFeel = std::make_unique<CustomLookAndFeel>();
-	//setLookAndFeel(m_pBasicLookAndFeel.get());
 	setColour(thumbColourId, juce::Colours::lightgrey);
 	setColour(trackColourId, juce::Colours::dimgrey);
 
@@ -109,4 +106,10 @@ juce::String CustomSlider::GetTextStr(bool min)
 
 	return getTextFromValue(getMaxValue());
 
+}
+
+void CustomSlider::mouseDrag(const juce::MouseEvent& event)
+{
+	if (!m_ReadOnly)
+		Slider::mouseDrag(event);
 }
