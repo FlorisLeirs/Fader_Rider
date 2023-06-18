@@ -10,6 +10,7 @@ struct ParameterSettings
 	float Threshold{ 0.5f };
 	float Output{ 1.f };
 	float Ramp{ 0.f };
+	bool NoiseGateBypass{ false };
 
 	inline static const juce::String TargetStr{"TargetLevel"};
 	inline static const juce::String FaderStr{"FaderLevel"};
@@ -18,6 +19,7 @@ struct ParameterSettings
 	inline static const juce::String ThresholdStr{"Threshold"};
 	inline static const juce::String OutputStr{"Output"};
 	inline static const juce::String RampStr{"Ramp"};
+	inline static const juce::String NoiseGateByPassStr{"NoiseGateBypass"};
 };
 
 class FaderValueTree : public juce::AudioProcessorValueTreeState

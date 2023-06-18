@@ -44,7 +44,7 @@ public:
 	float GetOffset() const { return m_SliderOffset; }
 
 private:
-	std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;
+	//std::unique_ptr<CustomLookAndFeel> m_pBasicLookAndFeel = nullptr;
 	juce::String m_ValueName{ "" };
 	float m_SliderOffset{ 15.f };
 	float m_ThumbWidth{ 10.f };

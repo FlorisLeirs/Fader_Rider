@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 
+class CustomLookAndFeel;
 class CustomSlider;
 class InputSlider;
 class TwoValueSliderAttachment;
@@ -35,21 +36,26 @@ private:
 
 	juce::Rectangle<int> m_TopArea{};
 
+	std::unique_ptr<CustomLookAndFeel> m_pLookAndFeel = nullptr;
+
 	std::unique_ptr<CustomSlider> m_pMinMaxSlider = nullptr;
 	std::unique_ptr<CustomSlider> m_pOutputSlider = nullptr;
 	std::unique_ptr<CustomSlider> m_pFaderLevel = nullptr;
 	std::unique_ptr<InputSlider> m_pTargetLevel = nullptr;
 	std::unique_ptr<CustomSlider> m_pThresholdSlider = nullptr;
 	std::unique_ptr<CustomSlider> m_pRampSlider = nullptr;
+	juce::ToggleButton m_Bypass;
 
-	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+	using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+	using ButtonAttachment = juce::AudioProcessorValueTreeState::ButtonAttachment;
+
 	std::unique_ptr<TwoValueSliderAttachment> m_pMinMaxAttachment = nullptr;
-	Attachment m_OutputAttachment;
-	Attachment m_FaderAttachment;
-	Attachment m_TargetAttachment;
-	Attachment m_ThresholdAttachment;
-	Attachment m_RampAttachment;
-
+	SliderAttachment m_OutputAttachment;
+	SliderAttachment m_FaderAttachment;
+	SliderAttachment m_TargetAttachment;
+	SliderAttachment m_ThresholdAttachment;
+	SliderAttachment m_RampAttachment;
+	ButtonAttachment m_BypassAttachment;
 
 	void InitializeSliders();
 

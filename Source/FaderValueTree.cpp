@@ -13,6 +13,7 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.TargetLevel = getRawParameterValue(ParameterSettings::TargetStr)->load();
 	m_Parameters.Threshold = getRawParameterValue(ParameterSettings::ThresholdStr)->load();
 	m_Parameters.Output = getRawParameterValue(ParameterSettings::OutputStr)->load();
+	m_Parameters.NoiseGateBypass = getRawParameterValue(ParameterSettings::NoiseGateByPassStr)->load();
 
 	float prevRamp = m_Parameters.Ramp;
 	m_Parameters.Ramp = getRawParameterValue(ParameterSettings::RampStr)->load();
@@ -68,6 +69,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 		juce::NormalisableRange(1.f, 350.f, 1.f, 1.f),
 		100.f));
 
+	layout.add(std::make_unique<juce::AudioParameterBool>(ParameterSettings::NoiseGateByPassStr,
+		ParameterSettings::NoiseGateByPassStr, false));
 
 	return layout;
 }

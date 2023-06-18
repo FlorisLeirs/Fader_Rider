@@ -9,6 +9,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "CustomLookAndFeel.h"
 #include "FaderValueTree.h"
 #include "3rdParty/MultiValueAttachedControlBase.h"
 #include "InputSlider.h"
@@ -23,11 +24,14 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	, m_pTargetLevel(std::make_unique<InputSlider>())
 	, m_pThresholdSlider(std::make_unique<CustomSlider>())
 	, m_pRampSlider(std::make_unique<CustomSlider>())
+	, m_Bypass("Noise Gate")
 	, m_OutputAttachment(*p.GetValueTree(), ParameterSettings::OutputStr, *m_pOutputSlider)
 	, m_FaderAttachment(*p.GetValueTree(), ParameterSettings::FaderStr, *m_pFaderLevel)
 	, m_TargetAttachment(*p.GetValueTree(), ParameterSettings::TargetStr, *m_pTargetLevel)
 	, m_ThresholdAttachment(*p.GetValueTree(), ParameterSettings::ThresholdStr, *m_pThresholdSlider)
 	, m_RampAttachment(*p.GetValueTree(), ParameterSettings::RampStr, *m_pRampSlider)
+	, m_BypassAttachment(*p.GetValueTree(), ParameterSettings::NoiseGateByPassStr, m_Bypass)
+	, m_pLookAndFeel(std::make_unique<CustomLookAndFeel>())
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
@@ -42,7 +46,7 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 
 Fader_RiderAudioProcessorEditor::~Fader_RiderAudioProcessorEditor()
 {
-
+	setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -66,8 +70,9 @@ void Fader_RiderAudioProcessorEditor::resized()
 	m_TopArea = topArea;
 
 	m_pTargetLevel->setBounds(topArea.removeFromTop(static_cast<int>(topArea.toFloat().getHeight() / 2.5f)));
-	m_pRampSlider->setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
-	m_pThresholdSlider->setBounds(topArea.removeFromLeft(topArea.getWidth()));
+	m_pRampSlider->setBounds(topArea.removeFromLeft(static_cast<int>(topArea.toFloat().getWidth() / 2.5f)));
+	m_Bypass.setBounds(topArea.removeFromLeft(topArea.getWidth() / 4));
+	m_pThresholdSlider->setBounds(topArea);
 
 	bounds.removeFromBottom(bounds.getHeight() / 20);
 	bounds.removeFromTop(bounds.getHeight() / 20);
@@ -91,18 +96,21 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pMinMaxSlider->setTextValueSuffix("dB");
 	m_pMinMaxSlider->SetValueName("Range");
 	m_pMinMaxSlider->setTextBoxStyle(Slider::NoTextBox, false, 50, 25);
+	m_pMinMaxSlider->setLookAndFeel(m_pLookAndFeel.get());
 
 	m_pFaderLevel->setSliderStyle(Slider::LinearVertical);
 	m_pFaderLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().FaderLevel);
 	m_pFaderLevel->SetValueName("Fader");
 	m_pFaderLevel->setTextValueSuffix("dB");
 	m_pFaderLevel->setTextBoxStyle(Slider::TextBoxAbove, true, 50, 25);
+	m_pFaderLevel->setLookAndFeel(m_pLookAndFeel.get());
 
 	m_pOutputSlider->setSliderStyle(Slider::LinearVertical);
 	m_pOutputSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Output);
 	m_pOutputSlider->SetValueName("Output");
 	m_pOutputSlider->setTextValueSuffix("dB");
 	m_pOutputSlider->setTextBoxStyle(Slider::TextBoxAbove, false, 50, 25);
+	m_pOutputSlider->setLookAndFeel(m_pLookAndFeel.get());
 
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 	m_pTargetLevel->SetValueName("Target");
@@ -114,12 +122,19 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pThresholdSlider->SetValueName("Threshold ");
 	m_pThresholdSlider->setTextValueSuffix("dB");
 	m_pThresholdSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
+	m_pThresholdSlider->setLookAndFeel(m_pLookAndFeel.get());
 
 	m_pRampSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	m_pRampSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Ramp);
-	m_pRampSlider->SetValueName("Ramp");
+	m_pRampSlider->SetValueName("Response");
 	m_pRampSlider->setTextValueSuffix("ms");
 	m_pRampSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
+	m_pRampSlider->setLookAndFeel(m_pLookAndFeel.get());
+
+	m_Bypass.setColour(juce::ToggleButton::tickColourId, juce::Colours::navajowhite);
+	m_Bypass.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::black);
+	m_Bypass.setColour(juce::ToggleButton::textColourId, juce::Colours::black);
+	m_Bypass.setLookAndFeel(m_pLookAndFeel.get());
 
 	addAndMakeVisible(*m_pMinMaxSlider);
 	addAndMakeVisible(*m_pFaderLevel);
@@ -127,4 +142,5 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	addAndMakeVisible(*m_pTargetLevel);
 	addAndMakeVisible(*m_pThresholdSlider);
 	addAndMakeVisible(*m_pRampSlider);
+	addAndMakeVisible(m_Bypass);
 }

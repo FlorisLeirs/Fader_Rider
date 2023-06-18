@@ -19,8 +19,8 @@ CustomSlider::CustomSlider()
 	// In your constructor, you should add any child components, and
 	// initialise any special settings that your component needs.
 	setSliderSnapsToMousePosition(false);
-	m_pBasicLookAndFeel = std::make_unique<CustomLookAndFeel>();
-	setLookAndFeel(m_pBasicLookAndFeel.get());
+	//m_pBasicLookAndFeel = std::make_unique<CustomLookAndFeel>();
+	//setLookAndFeel(m_pBasicLookAndFeel.get());
 	setColour(thumbColourId, juce::Colours::lightgrey);
 	setColour(trackColourId, juce::Colours::dimgrey);
 

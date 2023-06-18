@@ -171,6 +171,10 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
 	// Noise gate
 	const ParameterSettings params = m_pValueTreeState->GetParameterSettings();
+
+	m_RightChannel.setBypassed<0>(params.NoiseGateBypass);
+	m_LeftChannel.setBypassed<0>(params.NoiseGateBypass);
+
 	m_RightChannel.get<0>().setThreshold(params.Threshold);
 	m_LeftChannel.get<0>().setThreshold(params.Threshold);
 
