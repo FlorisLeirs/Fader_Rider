@@ -49,6 +49,16 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wi
 				};
 
 				g.fillRoundedRectangle(thumbRect, thumbHeight / 4.f);
+
+				juce::Font font{};
+				font.setHeight(pSlider->GetTextHeight());
+				g.setFont(font);
+				const auto text = pSlider->GetName();
+				auto textWidth = g.getCurrentFont().getStringWidth(text);
+
+				g.setColour(juce::Colours::white);
+				g.drawFittedText(text, sliderRect.getCentreX() - textWidth / 2, sliderRect.getBottom() + 2.f, textWidth,
+				                 static_cast<int>(font.getHeight()), juce::Justification::centred, 1);
 			}
 		}
 	}
@@ -91,7 +101,7 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 
 		g.setColour(juce::Colours::black);
 		g.drawFittedText(text, circleBounds.getCentreX() - textWidth / 2, y - slider.getTextBoxHeight(), textWidth,
-		                 static_cast<int>(font.getHeight()), juce::Justification::centred, 1);
+			static_cast<int>(font.getHeight()), juce::Justification::centred, 1);
 	}
 }
 

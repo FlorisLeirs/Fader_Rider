@@ -60,7 +60,7 @@ void InputLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wid
 		const auto textWidth = g.getCurrentFont().getStringWidth(text);
 
 		juce::Rectangle<int> textRect{};
-		textRect.setSize(textWidth, static_cast<int>(pSlider->GetTextHeight()));
+		textRect.setSize(textWidth, static_cast<int>(pSlider->getTextBoxHeight()));
 		textRect.setCentre(center);
 		textRect.setY(0);
 		textRect.translate(-slider.getTextBoxWidth() / 2 - textWidth,0);

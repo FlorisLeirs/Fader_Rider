@@ -35,9 +35,7 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.RangeMin = getRawParameterValue(ParameterSettings::MinStr)->load();
 	m_Parameters.RangeMax = getRawParameterValue(ParameterSettings::MaxStr)->load();
 	m_Parameters.TargetLevel = getRawParameterValue(ParameterSettings::TargetStr)->load();
-	//m_Parameters.FaderLevel = getRawParameterValue("FaderLevel")->load(); // not loaded because should not be changed in other externally
 	m_Parameters.Threshold = getRawParameterValue(ParameterSettings::ThresholdStr)->load();
-	//m_Parameters.MusicSensitivity = getRawParameterValue("MusicSensitivity")->load();
 	m_Parameters.Output = getRawParameterValue(ParameterSettings::OutputStr)->load();
 
 	float prevRamp = m_Parameters.Ramp;
@@ -78,19 +76,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::MaxStr, ParameterSettings::MaxStr,
 		juce::NormalisableRange(-12.f, 12.f, 0.2f),
-		12.f));
+		6.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::MinStr, ParameterSettings::MinStr,
 		juce::NormalisableRange(-12.f, 12.f, 0.2f),
-		-12.f));
+		-6.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::ThresholdStr, ParameterSettings::ThresholdStr,
 		juce::NormalisableRange(juce::Decibels::gainToDecibels(0.f), 0.f, 0.1f, 2.f),
 		-100.f));
-
-	//layout.add(std::make_unique<juce::AudioParameterFloat>("MusicSensitivity", "MusicSensitivity",
-	//	juce::NormalisableRange(-50.f, -10.f, 0.5f, 1.f),
-		//-25.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::OutputStr, ParameterSettings::OutputStr,
 		juce::NormalisableRange(-100.f, 100.f, 0.2f, 1.f),

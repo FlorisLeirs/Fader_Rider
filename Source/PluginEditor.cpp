@@ -31,7 +31,7 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
-	setSize(400, 600);
+	setSize(400, 700);
 	InitializeSliders();
 	m_pMinMaxAttachment = std::make_unique<TwoValueSliderAttachment>(*p.GetValueTree(), ParameterSettings::MinStr,
 		ParameterSettings::MaxStr, *m_pMinMaxSlider);
@@ -54,10 +54,6 @@ void Fader_RiderAudioProcessorEditor::paint(juce::Graphics& g)
 	g.setColour(juce::Colours::grey);
 	g.fillRect(m_TopArea);
 
-	g.setColour(juce::Colours::white);
-	g.setFont(15.0f);
-	//g.drawFittedText("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
-
 }
 
 void Fader_RiderAudioProcessorEditor::resized()
@@ -66,13 +62,15 @@ void Fader_RiderAudioProcessorEditor::resized()
 	// subcomponents in your editor..
 
 	auto bounds = getLocalBounds();
-	auto topArea = bounds.removeFromTop(bounds.getHeight() / 3);
+	auto topArea = bounds.removeFromTop(static_cast<float>(bounds.getHeight()) / 2.75f);
 	m_TopArea = topArea;
 
-	m_pTargetLevel->setBounds(topArea.removeFromTop(topArea.getHeight() / 3));
+	m_pTargetLevel->setBounds(topArea.removeFromTop(static_cast<float>(topArea.getHeight()) / 2.5f));
 	m_pRampSlider->setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
 	m_pThresholdSlider->setBounds(topArea.removeFromLeft(topArea.getWidth()));
 
+	bounds.removeFromBottom(bounds.getHeight() / 20);
+	bounds.removeFromTop(bounds.getHeight() / 20);
 	m_pMinMaxSlider->setBounds(bounds.removeFromLeft(bounds.getWidth() / 3));
 	m_pFaderLevel->setBounds(bounds.removeFromLeft(bounds.getWidth() / 2));
 	m_pOutputSlider->setBounds(bounds);
@@ -108,7 +106,8 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
 	m_pTargetLevel->SetValueName("Target");
-	m_pTargetLevel->setTextBoxStyle(Slider::TextBoxAbove, false, 60, 30);
+	m_pTargetLevel->setTextBoxStyle(Slider::TextBoxAbove, false, 60, 45);
+	m_pTargetLevel->SetTextHeight(20.f);
 
 	m_pThresholdSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	m_pThresholdSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Threshold);

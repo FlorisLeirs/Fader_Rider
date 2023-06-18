@@ -74,10 +74,6 @@ void CustomSlider::paint(juce::Graphics& g)
 		getLookAndFeel().drawLinearSlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), 0.f,
 			static_cast<float>(minSliderPos), static_cast<float>(maxSliderPos), sliderStyle, *this);
 	}
-
-	//if (const auto label = dynamic_cast<juce::Label*>(getChildComponent(0)); label && !label->isBeingEdited())
-	//	label->setText(GetTextStr(), juce::dontSendNotification);
-
 }
 
 void CustomSlider::resized()
