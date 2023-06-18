@@ -27,5 +27,6 @@ public:
 
 private:
 	void DrawTwoValueSlider(juce::Graphics&, juce::Rectangle<int> sliderRect, float minSliderPos, float maxSliderPos, juce::Slider&);
+	void DrawSingleValueSlider(juce::Graphics& g, juce::Rectangle<int> sliderRect, float sliderPos, const juce::Slider::SliderStyle sliderStyle, juce::Slider& slider);
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLookAndFeel)
 };

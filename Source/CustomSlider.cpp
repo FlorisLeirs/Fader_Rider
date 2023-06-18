@@ -52,7 +52,7 @@ void CustomSlider::paint(juce::Graphics& g)
 		bounds.removeFromRight(amountToRemove);
 
 		const auto range = getRange();
-		const auto sliderPos = juce::jmap(getValue(), range.getStart(), range.getEnd(),
+		const auto sliderPos = juce::jmap(valueToProportionOfLength(getValue()), 0.0, 1.0,
 			static_cast<double>(bounds.getBottom()), static_cast<double>(bounds.getY()));
 
 		getLookAndFeel().drawLinearSlider(g, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(),

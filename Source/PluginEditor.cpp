@@ -18,6 +18,7 @@ using juce::Slider;
 //==============================================================================
 Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudioProcessor& p)
 	: AudioProcessorEditor(&p), audioProcessor(p)
+	, m_pLookAndFeel(std::make_unique<CustomLookAndFeel>())
 	, m_pMinMaxSlider(std::make_unique<CustomSlider>())
 	, m_pOutputSlider(std::make_unique<CustomSlider>())
 	, m_pFaderLevel(std::make_unique<CustomSlider>())
@@ -31,7 +32,6 @@ Fader_RiderAudioProcessorEditor::Fader_RiderAudioProcessorEditor(Fader_RiderAudi
 	, m_ThresholdAttachment(*p.GetValueTree(), ParameterSettings::ThresholdStr, *m_pThresholdSlider)
 	, m_RampAttachment(*p.GetValueTree(), ParameterSettings::RampStr, *m_pRampSlider)
 	, m_BypassAttachment(*p.GetValueTree(), ParameterSettings::NoiseGateByPassStr, m_Bypass)
-	, m_pLookAndFeel(std::make_unique<CustomLookAndFeel>())
 {
 	// Make sure that before the constructor has finished, you've set the
 	// editor's size to whatever you need it to be.
@@ -113,13 +113,13 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pOutputSlider->setLookAndFeel(m_pLookAndFeel.get());
 
 	m_pTargetLevel->setValue(audioProcessor.GetValueTree()->GetParameterSettings().TargetLevel);
-	m_pTargetLevel->SetValueName("Target");
+	m_pTargetLevel->SetValueName("Target: ");
 	m_pTargetLevel->setTextBoxStyle(Slider::TextBoxAbove, false, 60, 45);
 	m_pTargetLevel->SetTextHeight(20.f);
 
 	m_pThresholdSlider->setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
 	m_pThresholdSlider->setValue(audioProcessor.GetValueTree()->GetParameterSettings().Threshold);
-	m_pThresholdSlider->SetValueName("Threshold ");
+	m_pThresholdSlider->SetValueName("Threshold");
 	m_pThresholdSlider->setTextValueSuffix("dB");
 	m_pThresholdSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 50, 25);
 	m_pThresholdSlider->setLookAndFeel(m_pLookAndFeel.get());
@@ -132,7 +132,7 @@ void Fader_RiderAudioProcessorEditor::InitializeSliders()
 	m_pRampSlider->setLookAndFeel(m_pLookAndFeel.get());
 
 	m_Bypass.setColour(juce::ToggleButton::tickColourId, juce::Colours::navajowhite);
-	m_Bypass.setColour(juce::ToggleButton::tickDisabledColourId, juce::Colours::black);
+	m_Bypass.setColour(juce::ToggleButton::tickDisabledColourId, m_pLookAndFeel->findColour(Slider::backgroundColourId));
 	m_Bypass.setColour(juce::ToggleButton::textColourId, juce::Colours::black);
 	m_Bypass.setLookAndFeel(m_pLookAndFeel.get());
 

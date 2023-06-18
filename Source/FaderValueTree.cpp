@@ -15,7 +15,7 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.Output = getRawParameterValue(ParameterSettings::OutputStr)->load();
 	m_Parameters.NoiseGateBypass = getRawParameterValue(ParameterSettings::NoiseGateByPassStr)->load();
 
-	float prevRamp = m_Parameters.Ramp;
+	const float prevRamp = m_Parameters.Ramp;
 	m_Parameters.Ramp = getRawParameterValue(ParameterSettings::RampStr)->load();
 	if (!juce::approximatelyEqual(prevRamp, m_Parameters.Ramp))
 		m_Smoothing.reset(m_SampleRate, m_Parameters.Ramp / 1000);
@@ -62,7 +62,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout FaderValueTree::CreateParame
 		-100.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::OutputStr, ParameterSettings::OutputStr,
-		juce::NormalisableRange(-100.f, 100.f, 0.2f, 1.f),
+		juce::NormalisableRange(-100.f, 100.f, 0.2f, 0.5f, true),
 		0.f));
 
 	layout.add(std::make_unique<juce::AudioParameterFloat>(ParameterSettings::RampStr, ParameterSettings::RampStr,

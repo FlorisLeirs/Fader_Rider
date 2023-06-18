@@ -34,70 +34,21 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g, int x, int y, int wi
 	}
 	else
 	{
-		const float widthFlt{ static_cast<float>(width) };
-		g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
-		g.fillRoundedRectangle(sliderRect.toFloat(), widthFlt / 4.f);
-
-		if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
-		{
-			if (sliderStyle == juce::Slider::LinearVertical)
-			{
-				const float xFlt = static_cast<float>(x);
-
-				const auto thumbHeight = pSlider->GetThumbWidth();
-				const float rounding = thumbHeight / 4;
-
-				// draw filler between 0 value and the sliderpos
-				if (!juce::approximatelyEqual(sliderPos, 0.f))
-				{
-					const float centreY = static_cast<float>(sliderRect.getCentreY());
-
-					juce::Rectangle<float> fillerRect{};
-					fillerRect.setLeft(static_cast<float>(x));
-					fillerRect.setWidth(widthFlt);
-					if (sliderPos < centreY)
-					{
-						fillerRect.setTop(sliderPos);
-						fillerRect.setHeight(centreY - sliderPos);
-					}
-					else
-					{
-						fillerRect.setTop(centreY);
-						fillerRect.setHeight(sliderPos - centreY);
-					}
-
-					g.setColour(slider.findColour(juce::Slider::ColourIds::trackColourId));
-					g.fillRoundedRectangle(fillerRect, rounding);
-				}
-
-				const auto thumbRect = juce::Rectangle{ xFlt, sliderPos - thumbHeight / 2,widthFlt,thumbHeight };
-
-				g.setColour(slider.findColour(juce::Slider::thumbColourId));
-				g.fillRoundedRectangle(thumbRect, thumbHeight / 4.f);
-
-				juce::Font font{};
-				font.setHeight(pSlider->GetTextHeight());
-				g.setFont(font);
-				const auto text = pSlider->GetName();
-				const auto textWidth = g.getCurrentFont().getStringWidth(text);
-
-				g.setColour(juce::Colours::white);
-				g.drawFittedText(text, sliderRect.getCentreX() - textWidth / 2, sliderRect.getBottom() + 2, textWidth,
-					static_cast<int>(font.getHeight()), juce::Justification::centred, 1);
-			}
-		}
+		DrawSingleValueSlider(g, sliderRect, sliderPos, sliderStyle, slider);
 	}
 }
 
 void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
 	float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider)
 {
-	g.setColour(slider.findColour(juce::Slider::rotarySliderOutlineColourId));
 	const int size = juce::jmin(width, height);
 	const juce::Rectangle<int> circleBounds = juce::Rectangle<int>{ x, y, width, height }.withSizeKeepingCentre(size, size);
 
+	//Outline--------------
+	g.setColour(slider.findColour(juce::Slider::rotarySliderOutlineColourId));
 	g.fillEllipse(circleBounds.toFloat());
 
+	//Circle------------
 	g.setColour(slider.findColour(juce::Slider::rotarySliderFillColourId));
 	g.drawEllipse(circleBounds.toFloat(), 1.f);
 
@@ -110,14 +61,14 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 		circleBounds.getCentreX() + arcRadius * std::cos(angle - juce::MathConstants<float>::halfPi),
 		circleBounds.getCentreY() + arcRadius * std::sin(angle - juce::MathConstants<float>::halfPi));
 
-	g.setColour(slider.findColour(juce::Slider::thumbColourId));
-
 	const auto thumbWidth = thumbOffset * 2.f;
 
+	g.setColour(slider.findColour(juce::Slider::thumbColourId));
 	g.fillEllipse(juce::Rectangle<float>(thumbWidth, thumbWidth).withCentre(thumbPoint));
 
 	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
 	{
+		//Text-------------
 		juce::Font font{};
 		font.setHeight(pSlider->GetTextHeight());
 		g.setFont(font);
@@ -130,16 +81,17 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 	}
 }
 
-void CustomLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& toggleButton,
-	bool /*shouldDrawButtonAsHighlighted*/, bool /*shouldDrawButtonAsDown*/)
+void CustomLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& toggleButton, bool, bool)
 {
 	const auto bounds = toggleButton.getLocalBounds().toFloat();
 	auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 	const auto r = bounds.withSizeKeepingCentre(size, size);
 
+	//Circle-------------------
 	g.setColour(juce::Colours::dimgrey);
 	g.fillEllipse(r);
 
+	//Power icon-----------------
 	const float angle = 30.f;
 	size /= 1.5f;
 
@@ -147,6 +99,7 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& 
 	powerButton.addCentredArc(r.getCentreX(), r.getCentreY(), size / 2, size / 2, 0.f,
 		juce::degreesToRadians(angle), juce::degreesToRadians(360.f - angle), true);
 
+	// add line in middle
 	powerButton.startNewSubPath(r.getCentreX(), r.getCentreY() - size / 1.9f);
 	powerButton.lineTo(r.getCentre());
 
@@ -173,17 +126,16 @@ void CustomLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& 
 void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<int> sliderRect, float minSliderPos,
 	float maxSliderPos, juce::Slider& slider)
 {
-	sliderRect.translate(-20, 0);
+	sliderRect.translate(-20, 0); // add offset to make space for pointers and values
 	const auto width = static_cast<float>(sliderRect.getWidth());
 	const auto x = static_cast<float>(sliderRect.getX());
-	g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
 
+	// Background
+	g.setColour(slider.findColour(juce::Slider::backgroundColourId));
 	g.fillRoundedRectangle(sliderRect.toFloat(), width / 4.f);
 
 	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
 	{
-
-
 		//Range-----------------
 		const auto rangeRect = juce::Rectangle{ x, maxSliderPos,
 			width, minSliderPos - maxSliderPos
@@ -193,8 +145,6 @@ void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<in
 		g.fillRoundedRectangle(rangeRect, width / 4.f);
 
 		//Thumbs-------------
-		g.setColour(slider.findColour(juce::Slider::thumbColourId));
-
 		const auto thumbHeight = pSlider->GetThumbWidth();
 		const float diameter = thumbHeight;
 
@@ -208,11 +158,12 @@ void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<in
 			diameter, diameter
 		};
 
+		g.setColour(slider.findColour(juce::Slider::thumbColourId));
 		drawPointer(g, maxThumbRect.getX(), maxThumbRect.getY(),
-			diameter, slider.findColour(juce::Slider::thumbColourId), 1);
+			diameter, slider.findColour(juce::Slider::thumbColourId), 1); // MAX
 
 		drawPointer(g, minThumbRect.getX(), minThumbRect.getY(),
-			diameter, slider.findColour(juce::Slider::thumbColourId), 3);
+			diameter, slider.findColour(juce::Slider::thumbColourId), 3); // MIN
 
 		//Text-----------------
 		juce::Font font{};
@@ -237,6 +188,67 @@ void CustomLookAndFeel::DrawTwoValueSlider(juce::Graphics& g, juce::Rectangle<in
 
 		g.drawFittedText(name, sliderRect.getX(), 2, textWidth, static_cast<int>(font.getHeight()),
 			juce::Justification::centred, 1);
+	}
+}
+
+void CustomLookAndFeel::DrawSingleValueSlider(juce::Graphics& g, juce::Rectangle<int> sliderRect, float sliderPos,
+	const juce::Slider::SliderStyle sliderStyle, juce::Slider& slider)
+{
+	const float widthFlt{ static_cast<float>(sliderRect.getWidth()) };
+
+	//Background------------------
+	g.setColour(slider.findColour((juce::Slider::backgroundColourId)));
+	g.fillRoundedRectangle(sliderRect.toFloat(), widthFlt / 4.f);
+
+	if (const auto pSlider = dynamic_cast<CustomSlider*>(&slider); pSlider)
+	{
+		if (sliderStyle == juce::Slider::LinearVertical)
+		{
+			const float xFlt = static_cast<float>(sliderRect.getX());
+
+			const auto thumbHeight = pSlider->GetThumbWidth();
+			const float rounding = thumbHeight / 4;
+
+			// Draw filler between 0 value and the sliderpos
+			if (!juce::approximatelyEqual(sliderPos, 0.f))
+			{
+				const float centreY = static_cast<float>(sliderRect.getCentreY());
+
+				juce::Rectangle<float> fillerRect{};
+				fillerRect.setLeft(xFlt);
+				fillerRect.setWidth(widthFlt);
+				if (sliderPos < centreY)
+				{
+					fillerRect.setTop(sliderPos);
+					fillerRect.setHeight(centreY - sliderPos);
+				}
+				else
+				{
+					fillerRect.setTop(centreY);
+					fillerRect.setHeight(sliderPos - centreY);
+				}
+
+				g.setColour(slider.findColour(juce::Slider::ColourIds::trackColourId));
+				g.fillRoundedRectangle(fillerRect, rounding);
+			}
+
+			//Thumb----------------------
+			const auto thumbRect = juce::Rectangle{ xFlt, sliderPos - thumbHeight / 2,widthFlt,thumbHeight };
+
+			g.setColour(slider.findColour(juce::Slider::thumbColourId));
+			g.fillRoundedRectangle(thumbRect, thumbHeight / 4.f);
+
+			//Text--------------------------
+			juce::Font font{};
+			font.setHeight(pSlider->GetTextHeight());
+			g.setFont(font);
+			const auto text = pSlider->GetName();
+			const auto textWidth = g.getCurrentFont().getStringWidth(text);
+
+			g.setColour(juce::Colours::white);
+			g.drawFittedText(text, sliderRect.getCentreX() - textWidth / 2, sliderRect.getBottom() + 2, textWidth,
+				static_cast<int>(font.getHeight()), juce::Justification::centred, 1);
+		}
 	}
 }
 
