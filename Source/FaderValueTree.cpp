@@ -1,29 +1,5 @@
 #include "FaderValueTree.h"
 
-void ParameterSettings::DbToGain()
-{
-	//TargetLevel = TargetLevel < 0.f
-	//	             ? juce::Decibels::decibelsToGain(fabs(TargetLevel)) * -1.f
-	//	             : juce::Decibels::decibelsToGain(fabs(TargetLevel));
-	// Make sure values are between -INF and 0 for conversion then add sign
-	//FaderLevel = FaderLevel < 0.f
-	//	             ? juce::Decibels::decibelsToGain(fabs(FaderLevel)) * -1.f
-	//	             : juce::Decibels::decibelsToGain(fabs(FaderLevel));
-
-	//RangeMax = RangeMax < 0.f
-	//	           ? juce::Decibels::decibelsToGain(fabs(RangeMax)) * -1.f
-	//	           : juce::Decibels::decibelsToGain(fabs(RangeMax));
-
-	//RangeMin = RangeMin < 0.f
-	//	           ? juce::Decibels::decibelsToGain(fabs(RangeMin)) * -1.f
-	//	           : juce::Decibels::decibelsToGain(fabs(RangeMin));
-
-	Threshold = juce::Decibels::decibelsToGain(Threshold);
-	//MusicSensitivity = juce::Decibels::decibelsToGain(MusicSensitivity);
-	Output = juce::Decibels::decibelsToGain(Output);
-
-}
-
 FaderValueTree::FaderValueTree(juce::AudioProcessor& audioProcessor)
 	: AudioProcessorValueTreeState(audioProcessor, nullptr, "Parameters", CreateParameterLayout())
 {
@@ -42,8 +18,6 @@ void FaderValueTree::UpdateParameterSettings()
 	m_Parameters.Ramp = getRawParameterValue(ParameterSettings::RampStr)->load();
 	if (!juce::approximatelyEqual(prevRamp, m_Parameters.Ramp))
 		m_Smoothing.reset(m_SampleRate, m_Parameters.Ramp / 1000);
-
-	//m_Parameters.DbToGain();
 }
 
 void FaderValueTree::SetGainLevel(float currentGain)

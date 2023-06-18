@@ -8,7 +8,6 @@ struct ParameterSettings
 	float RangeMax{ 1.f };
 	float RangeMin{ 0.f };
 	float Threshold{ 0.5f };
-	//float MusicSensitivity{ 0.2f };
 	float Output{ 1.f };
 	float Ramp{ 0.f };
 
@@ -19,9 +18,6 @@ struct ParameterSettings
 	inline static const juce::String ThresholdStr{"Threshold"};
 	inline static const juce::String OutputStr{"Output"};
 	inline static const juce::String RampStr{"Ramp"};
-
-	void DbToGain();
-
 };
 
 class FaderValueTree : public juce::AudioProcessorValueTreeState

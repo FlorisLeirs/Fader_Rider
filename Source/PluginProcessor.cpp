@@ -186,6 +186,18 @@ void Fader_RiderAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
 	m_LeftChannel.process(leftContext);
 	m_RightChannel.process(rightContext);
+
+	// Output
+	float output = juce::Decibels::decibelsToGain(params.Output);
+
+	for(int channel{0}; channel != buffer.getNumChannels(); ++channel)
+	{
+		auto pBuffer = buffer.getWritePointer(channel);
+		for(int sampleIdx{0}; sampleIdx != buffer.getNumSamples(); ++sampleIdx)
+			pBuffer[sampleIdx] *= output;
+	}
+		
+
 }
 
 //==============================================================================

@@ -62,10 +62,10 @@ void Fader_RiderAudioProcessorEditor::resized()
 	// subcomponents in your editor..
 
 	auto bounds = getLocalBounds();
-	auto topArea = bounds.removeFromTop(static_cast<float>(bounds.getHeight()) / 2.75f);
+	auto topArea = bounds.removeFromTop(static_cast<int>(bounds.toFloat().getHeight() / 2.75f));
 	m_TopArea = topArea;
 
-	m_pTargetLevel->setBounds(topArea.removeFromTop(static_cast<float>(topArea.getHeight()) / 2.5f));
+	m_pTargetLevel->setBounds(topArea.removeFromTop(static_cast<int>(topArea.toFloat().getHeight() / 2.5f)));
 	m_pRampSlider->setBounds(topArea.removeFromLeft(topArea.getWidth() / 2));
 	m_pThresholdSlider->setBounds(topArea.removeFromLeft(topArea.getWidth()));
 
